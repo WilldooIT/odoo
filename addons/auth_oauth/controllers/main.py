@@ -57,7 +57,12 @@ class OAuthLogin(Home):
         except Exception:
             providers = []
         for provider in providers:
-            return_url = request.httprequest.url_root + 'auth_oauth/signin'
+            try:
+                #Patch: Werkzeug disregards X-Forwarded-Proto on nginx, so we must manually construct the URL
+                return_url = "%s://%s/auth_oauth/signin" % (request.httprequest.environ["HTTP_X_FORWARDED_PROTO"], request.httprequest.environ["HTTP_HOST"])
+            except:
+                #Fallback, as nginx may not be configured to pass X-Forwarded-Proto
+                return_url = request.httprequest.url_root + 'auth_oauth/signin'
             state = self.get_state(provider)
             params = dict(
                 response_type='token',

@@ -10,7 +10,7 @@ class Mail(models.Model):
     @api.multi
     def _postprocess_sent_message(self, mail_sent=True):
         # Piece of code to allow custom postprocessing outside of here.
-        if not self.env.context.get('sale_portal_processing_done'):
+        if self.env.context.get('sale_portal_processing_done'):
             return super(Mail, self)._postprocess_sent_message(mail_sent=mail_sent)
 
         for mail in self:

@@ -1159,7 +1159,8 @@ return {
     'alt': alt,
     'MediaDialog': MediaDialog,
     'fontIcons': fontIcons,
-    'LinkDialog': LinkDialog
+    'LinkDialog': LinkDialog,
+    'ImageDialog': ImageDialog
 };
 
 });

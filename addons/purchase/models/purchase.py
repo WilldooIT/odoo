@@ -509,6 +509,7 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _name = 'purchase.order.line'
     _description = 'Purchase Order Line'
+    _order = 'sequence, id'
 
     @api.depends('product_qty', 'price_unit', 'taxes_id')
     def _compute_amount(self):
@@ -976,16 +977,23 @@ class ProcurementOrder(models.Model):
             'group_id': group
         }
 
+    def _make_po_select_supplier(self, suppliers):
+        """ Method intended to be overridden by customized modules to implement any logic in the
+            selection of supplier.
+        """
+        return suppliers[0]
+
     @api.multi
     def make_po(self):
         cache = {}
         res = []
         for procurement in self:
-            suppliers = procurement.product_id.seller_ids.filtered(lambda r: not r.product_id or r.product_id == procurement.product_id)
+            suppliers = procurement.product_id.seller_ids\
+                .filtered(lambda r: (not r.company_id or r.company_id == procurement.company_id) and (not r.product_id or r.product_id == procurement.product_id))
             if not suppliers:
                 procurement.message_post(body=_('No vendor associated to product %s. Please set one to fix this procurement.') % (procurement.product_id.name))
                 continue
-            supplier = suppliers[0]
+            supplier = procurement._make_po_select_supplier(suppliers)
             partner = supplier.name
 
             gpo = procurement.rule_id.group_propagation_option

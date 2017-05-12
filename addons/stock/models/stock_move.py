@@ -349,7 +349,7 @@ class StockMove(models.Model):
             raise UserError(_('Cannot unreserve a done move'))
         self.quants_unreserve()
         if not self.env.context.get('no_state_change'):
-            waiting = self.filtered(lambda move: move.get_ancestors())
+            waiting = self.filtered(lambda move: move.procure_method == 'make_to_order' or move.get_ancestors())
             waiting.write({'state': 'waiting'})
             (self - waiting).write({'state': 'confirmed'})
 
@@ -411,15 +411,8 @@ class StockMove(models.Model):
         type (moves should already have them identical). Otherwise, create a new
         picking to assign them to. """
         Picking = self.env['stock.picking']
-
-        # If this method is called in batch by a write on a one2many and
-        # at some point had to create a picking, some next iterations could
-        # try to find back the created picking. As we look for it by searching
-        # on some computed fields, we have to force a recompute, else the
-        # record won't be found.
-        self.recompute()
-
         for move in self:
+            recompute = False
             picking = Picking.search([
                 ('group_id', '=', move.group_id.id),
                 ('location_id', '=', move.location_id.id),
@@ -428,8 +421,17 @@ class StockMove(models.Model):
                 ('printed', '=', False),
                 ('state', 'in', ['draft', 'confirmed', 'waiting', 'partially_available', 'assigned'])], limit=1)
             if not picking:
+                recompute = True
                 picking = Picking.create(move._get_new_picking_values())
             move.write({'picking_id': picking.id})
+
+            # If this method is called in batch by a write on a one2many and
+            # at some point had to create a picking, some next iterations could
+            # try to find back the created picking. As we look for it by searching
+            # on some computed fields, we have to force a recompute, else the
+            # record won't be found.
+            if recompute:
+                move.recompute()
         return True
     _picking_assign = assign_picking
 
@@ -496,9 +498,12 @@ class StockMove(models.Model):
         self._push_apply()
         return self
 
+    def _set_default_price_moves(self):
+        return self.filtered(lambda move: not move.price_unit)
+
     def set_default_price_unit_from_product(self):
         """ Set price to move, important in inter-company moves or receipts with only one partner """
-        for move in self.filtered(lambda move: not move.price_unit):
+        for move in self._set_default_price_moves():
             move.write({'price_unit': move.product_id.standard_price})
     attribute_price = set_default_price_unit_from_product
 
@@ -690,7 +695,7 @@ class StockMove(models.Model):
             if len(reserved_quant_ids) == 0 and move.partially_available:
                 vals['partially_available'] = False
             if move.state == 'assigned':
-                if move.find_move_ancestors():
+                if move.procure_method == 'make_to_order' or move.find_move_ancestors():
                     vals['state'] = 'waiting'
                 else:
                     vals['state'] = 'confirmed'

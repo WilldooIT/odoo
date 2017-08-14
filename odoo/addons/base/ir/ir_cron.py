@@ -8,6 +8,7 @@ import pytz
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import re
+import json
 
 import odoo
 from odoo import api, fields, models, _
@@ -181,7 +182,7 @@ class ir_cron(models.Model):
     @classmethod
     def _process_jobs(cls, db_name):
 
-        cron_whitelist = odoo.tools.config.get("db_cron_whitelist", [])
+        cron_whitelist = odoo.tools.config.get("db_cron_whitelist") and json.loads(odoo.tools.config["db_cron_whitelist"]) or []
         if not db_name in cron_whitelist:
             for cw_name in cron_whitelist:
                 if re.match(cw_name, db_name):

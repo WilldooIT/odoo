@@ -12,6 +12,7 @@ import logging
 import re
 import smtplib
 import threading
+import json
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import except_orm, UserError
@@ -385,7 +386,7 @@ class IrMailServer(models.Model):
                  MailDeliveryException and logs root cause.
         """
 
-        cron_whitelist = config.get("db_cron_whitelist", [])
+        cron_whitelist = config.get("db_cron_whitelist") and json.loads(config["db_cron_whitelist"]) or []
         if not self.env.cr.dbname in cron_whitelist:
             for cw_name in cron_whitelist:
                 if re.match(cw_name, self.env.cr.dbname):

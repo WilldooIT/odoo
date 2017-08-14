@@ -179,6 +179,11 @@ class ir_cron(models.Model):
 
     @classmethod
     def _process_jobs(cls, db_name):
+
+        cron_whitelist = odoo.tools.config.get("db_cron_whitelist", [])
+        if not db_name in cron_whitelist:
+            return False
+
         """ Try to process all cron jobs.
 
         This selects in database all the jobs that should be processed. It then

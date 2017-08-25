@@ -206,7 +206,7 @@ var CompletionFieldMixin = {
             });
 
             // search more... if more results that max
-            if (values.length > self.limit) {
+            if ((values.length > self.limit && !(self.options && self.options.no_search_more)) || (values.length > 0 && self.options && self.options.force_search_more)) {
                 values = values.slice(0, self.limit);
                 values.push({
                     label: _t("Search More..."),

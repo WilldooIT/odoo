@@ -18,6 +18,8 @@ from odoo import api, fields, models, tools, _
 from odoo.exceptions import except_orm, UserError
 from odoo.tools import html2text, ustr, config
 
+from odoo.addons.base.ir.ir_cron import db_whitelisted
+
 _logger = logging.getLogger(__name__)
 _test_logger = logging.getLogger('odoo.tests')
 
@@ -386,13 +388,8 @@ class IrMailServer(models.Model):
                  MailDeliveryException and logs root cause.
         """
 
-        cron_whitelist = config.get("db_cron_whitelist") and json.loads(config["db_cron_whitelist"]) or []
-        if not self.env.cr.dbname in cron_whitelist:
-            for cw_name in cron_whitelist:
-                if re.match(cw_name, self.env.cr.dbname):
-                    break
-            else:
-                raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
+        if not db_whitelisted(self.env.cr.dbname):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
 
         # Use the default bounce address **only if** no Return-Path was
         # provided by caller.  Caller may be using Variable Envelope Return

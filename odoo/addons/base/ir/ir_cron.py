@@ -39,6 +39,17 @@ def db_whitelisted(db_name):
     return True
 
 
+def db_whitelisted(db_name):
+    cron_whitelist = odoo.tools.config.get("db_cron_whitelist") and json.loads(odoo.tools.config["db_cron_whitelist"]) or []
+    if db_name not in cron_whitelist:
+        for cw_name in cron_whitelist:
+            if re.match(cw_name, db_name):
+                break
+        else:
+            return False
+    return True
+
+
 def str2tuple(s):
     return safe_eval('tuple(%s)' % (s or ''))
 

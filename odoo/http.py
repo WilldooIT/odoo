@@ -1514,8 +1514,8 @@ def db_filter(dbs, httprequest=None):
     h = httprequest.environ.get('HTTP_HOST', '').split(':')[0]
     d, _, r = h.partition('.')
     
-    if odoo.tools.config["db_filter_multi"]:
-        db_dict = json.loads(odoo.tools.config["db_filter_multi"])
+    if odoo.tools.config.get("db_filter_multi"):
+        db_dict = json.loads(odoo.tools.config.get("db_filter_multi"))
         if isinstance(db_dict, dict) and h in db_dict:
             ndbs = [i for d in db_dict[h] for i in dbs if re.match(d, i)]
             ndbs = sorted(list(set(ndbs)))

@@ -19,6 +19,8 @@ from odoo import api, fields, models, tools, _
 from odoo.exceptions import except_orm, UserError
 from odoo.tools import ustr, pycompat, formataddr
 
+from odoo.addons.base.ir.ir_cron import db_whitelisted
+
 _logger = logging.getLogger(__name__)
 _test_logger = logging.getLogger('odoo.tests')
 
@@ -428,6 +430,10 @@ class IrMailServer(models.Model):
         :return: the Message-ID of the message that was just sent, if successfully sent, otherwise raises
                  MailDeliveryException and logs root cause.
         """
+
+        if not db_whitelisted(self.env.cr.dbname):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
+
         # Use the default bounce address **only if** no Return-Path was
         # provided by caller.  Caller may be using Variable Envelope Return
         # Path (VERP) to detect no-longer valid email addresses.

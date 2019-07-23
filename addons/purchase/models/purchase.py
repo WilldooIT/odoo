@@ -142,7 +142,7 @@ class PurchaseOrder(models.Model):
     picking_ids = fields.Many2many('stock.picking', compute='_compute_picking', string='Receptions', copy=False, store=True, compute_sudo=True)
 
     # There is no inverse function on purpose since the date may be different on each line
-    date_planned = fields.Datetime(string='Scheduled Date', compute='_compute_date_planned', store=True, index=True)
+    date_planned = fields.Datetime(string='Receipt Date', index=True)
 
     amount_untaxed = fields.Monetary(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
     amount_tax = fields.Monetary(string='Taxes', store=True, readonly=True, compute='_amount_all')
@@ -200,6 +200,13 @@ class PurchaseOrder(models.Model):
         return super(PurchaseOrder, self).create(vals)
 
     @api.multi
+    def write(self, vals):
+        res = super(PurchaseOrder, self).write(vals)
+        if vals.get('date_planned'):
+            self.order_line.write({'date_planned': vals['date_planned']})
+        return res
+
+    @api.multi
     def unlink(self):
         for order in self:
             if not order.state == 'cancel':
@@ -210,10 +217,13 @@ class PurchaseOrder(models.Model):
     def copy(self, default=None):
         new_po = super(PurchaseOrder, self).copy(default=default)
         for line in new_po.order_line:
-            seller = line.product_id._select_seller(
-                partner_id=line.partner_id, quantity=line.product_qty,
-                date=line.order_id.date_order and line.order_id.date_order[:10], uom_id=line.product_uom)
-            line.date_planned = line._get_date_planned(seller)
+            if new_po.date_planned:
+                line.date_planned = new_po.date_planned
+            else:
+                seller = line.product_id._select_seller(
+                    partner_id=line.partner_id, quantity=line.product_qty,
+                    date=line.order_id.date_order and line.order_id.date_order.date(), uom_id=line.product_uom)
+                line.date_planned = line._get_date_planned(seller)
         return new_po
 
     @api.multi
@@ -542,11 +552,14 @@ class PurchaseOrder(models.Model):
         result['context']['default_reference'] = self.partner_ref
         return result
 
+<<<<<<< HEAD
     @api.multi
     def action_set_date_planned(self):
         for order in self:
             order.order_line.update({'date_planned': order.date_planned})
 
+=======
+>>>>>>> a2a39ef... [IMP] purchase: set schedule_date of po lines as per date_planned of PO
 
 class PurchaseOrderLine(models.Model):
     _name = 'purchase.order.line'
@@ -610,6 +623,11 @@ class PurchaseOrderLine(models.Model):
 
     @api.model
     def create(self, values):
+        order_id = values.get('order_id')
+        if 'date_planned' not in values:
+            order = self.env['purchase.order'].browse(order_id)
+            if order.date_planned:
+                values['date_planned'] = order.date_planned
         line = super(PurchaseOrderLine, self).create(values)
         if line.order_id.state == 'purchase':
             line._create_or_update_picking()

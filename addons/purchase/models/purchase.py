@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
@@ -222,7 +221,7 @@ class PurchaseOrder(models.Model):
             else:
                 seller = line.product_id._select_seller(
                     partner_id=line.partner_id, quantity=line.product_qty,
-                    date=line.order_id.date_order and line.order_id.date_order.date(), uom_id=line.product_uom)
+                    date=line.order_id.date_order and line.order_id.date_order[:10], uom_id=line.product_uom)
                 line.date_planned = line._get_date_planned(seller)
         return new_po
 
@@ -552,14 +551,6 @@ class PurchaseOrder(models.Model):
         result['context']['default_reference'] = self.partner_ref
         return result
 
-<<<<<<< HEAD
-    @api.multi
-    def action_set_date_planned(self):
-        for order in self:
-            order.order_line.update({'date_planned': order.date_planned})
-
-=======
->>>>>>> a2a39ef... [IMP] purchase: set schedule_date of po lines as per date_planned of PO
 
 class PurchaseOrderLine(models.Model):
     _name = 'purchase.order.line'

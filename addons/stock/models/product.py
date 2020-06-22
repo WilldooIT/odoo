@@ -599,7 +599,7 @@ class ProductTemplate(models.Model):
     def action_update_quantity_on_hand(self):
         default_product_id = self.env.context.get('default_product_id', self.product_variant_id.id)
         if self.env.user.user_has_groups('stock.group_stock_multi_locations') or (self.env.user.user_has_groups('stock.group_production_lot') and self.tracking != 'none'):
-            product_ref_name = self.name + ' - ' + datetime.today().strftime('%m/%d/%y')
+            product_ref_name = self.name + ' - ' + datetime.today().strftime('%d/%m/%y')
             ctx = {'default_filter': 'product', 'default_product_id': default_product_id, 'default_name': product_ref_name}
             return {
                 'type': 'ir.actions.act_window',

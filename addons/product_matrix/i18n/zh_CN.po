@@ -33,7 +33,7 @@ msgstr "蓝色"
 #: code:addons/product_matrix/static/src/js/section_and_note_widget.js:0
 #, python-format
 msgid "Choose Product Variants"
-msgstr ""
+msgstr "选择单品Sku"
 
 #. module: product_matrix
 #. openerp-web

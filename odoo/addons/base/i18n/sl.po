@@ -3,7 +3,7 @@
 # 	* base
 # 
 # Translators:
-# Borut Jures, 2020
+# 025aa31cb7deb4d52a7a587a91994bd9_c519582, 2020
 # Simon Hohler <simon.hohler@gmail.com>, 2020
 # Vida Potočnik <vida.potocnik@mentis.si>, 2020
 # laznikd <laznik@mentis.si>, 2020
@@ -3962,6 +3962,9 @@ msgid ""
 "Send KPI Digests periodically\n"
 "=============================\n"
 msgstr ""
+"\n"
+"Periodično pošlji povzetek s ključnimi kazalniki\n"
+"=============================\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_delivery_bpost
@@ -14268,7 +14271,7 @@ msgstr "K FINANČNE IN ZAVAROVALNIŠKE DEJAVNOSTI"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_digest
 msgid "KPI Digests"
-msgstr ""
+msgstr "Povzetki s ključnimi kazalniki"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_actions_act_window_view__view_mode__kanban
@@ -21355,7 +21358,7 @@ msgstr "Ponudnik plačilne storitve Stripe"
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_translation__type__model_terms
 msgid "Structured Model Field"
-msgstr ""
+msgstr "Polje strukturiranega modela"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_studio

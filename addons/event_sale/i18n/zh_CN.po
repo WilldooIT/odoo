@@ -4,13 +4,13 @@
 # 
 # Translators:
 # Jeanphy <hzh0292@qq.com>, 2019
-# Jeffery CHEN Fan <jeffery9@gmail.com>, 2019
 # niulin lnc. <admin@niulin.net>, 2019
 # liAnGjiA <liangjia@qq.com>, 2019
 # inspur qiuguodong <qiuguodong@inspur.com>, 2019
 # Martin Trigaux, 2019
 # THL <wt39181819@gmail.com>, 2019
 # 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2019
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2020
 # guohuadeng <guohuadeng@hotmail.com>, 2020
 # 
 msgid ""
@@ -151,7 +151,7 @@ msgstr "活动类别"
 #. module: event_sale
 #: model:ir.model,name:event_sale.model_event_event_configurator
 msgid "Event Configurator"
-msgstr ""
+msgstr "事件配置器"
 
 #. module: event_sale
 #: model_terms:ir.ui.view,arch_db:event_sale.event_ticket_form_view

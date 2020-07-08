@@ -3,7 +3,6 @@
 # 	* pos_restaurant
 # 
 # Translators:
-# Jeanphy <hzh0292@qq.com>, 2019
 # liAnGjiA <liangjia@qq.com>, 2019
 # v2exerer <9010446@qq.com>, 2019
 # fausthuang, 2019
@@ -12,13 +11,13 @@
 # Felix Yuen <fyu@odoo.com>, 2019
 # e2f <projects@e2f.com>, 2019
 # Martin Trigaux, 2019
-# Jeffery CHEN Fan <jeffery9@gmail.com>, 2019
 # 老窦 北京 <2662059195@qq.com>, 2019
 # 湘子 南 <1360857908@qq.com>, 2019
 # keecome <7017511@qq.com>, 2019
 # xu xiaohu <xu.xiaohu@gmail.com>, 2019
 # inspur qiuguodong <qiuguodong@inspur.com>, 2019
 # as co02 <asco02@163.com>, 2020
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2020
 # guohuadeng <guohuadeng@hotmail.com>, 2020
 # 
 msgid ""
@@ -128,7 +127,7 @@ msgstr ""
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_table__active
 msgid "Active"
-msgstr "有效"
+msgstr "启用"
 
 #. module: pos_restaurant
 #. openerp-web

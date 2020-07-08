@@ -259,7 +259,7 @@ actual arch.
          """)
 
     @api.depends('arch_db', 'arch_fs', 'arch_updated')
-    @api.depends_context('read_arch_from_file')
+    @api.depends_context('read_arch_from_file', 'lang')
     def _compute_arch(self):
         def resolve_external_ids(arch_fs, view_xml_id):
             def replacer(m):
@@ -297,6 +297,10 @@ actual arch.
                     data['arch_fs'] = '/'.join(path_info[0:2])
                     data['arch_updated'] = False
             view.write(data)
+        # the field 'arch' depends on the context and has been implicitly
+        # modified in all languages; the invalidation below ensures that the
+        # field does not keep an old value in another environment
+        self.invalidate_cache(['arch'], self._ids)
 
     @api.depends('arch')
     @api.depends_context('read_arch_from_file')
@@ -378,8 +382,6 @@ actual arch.
         # Any exception raised below will cause a transaction rollback.
         self = self.with_context(check_field_names=True)
         for view in self:
-            if not view.arch:
-                continue
             view_arch = etree.fromstring(view.arch.encode('utf-8'))
             view._valid_inheritance(view_arch)
             view_def = view.read_combined(['arch'])
@@ -475,7 +477,7 @@ actual arch.
     def write(self, vals):
         # Keep track if view was modified. That will be useful for the --dev mode
         # to prefer modified arch over file arch.
-        if ('arch' in vals or 'arch_base' in vals) and 'install_filename' not in self._context:
+        if 'arch_updated' not in vals and ('arch' in vals or 'arch_base' in vals) and 'install_filename' not in self._context:
             vals['arch_updated'] = True
 
         # drop the corresponding view customizations (used for dashboards for example), otherwise
@@ -507,7 +509,7 @@ actual arch.
         # if in uninstall mode and has children views, emulate an ondelete cascade
         if self.env.context.get('_force_unlink', False) and self.inherit_children_ids:
             self.inherit_children_ids.unlink()
-        super(View, self).unlink()
+        return super(View, self).unlink()
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -883,6 +885,7 @@ actual arch.
                 self.with_context(
                     base_model_name=model,
                     check_field_names=False,  # field validation is a bit more tricky and done apart
+                    check_field_names_original=self.env.context.get('check_field_names'),
                     view_is_editable=False,
                 ).postprocess_and_fields(model, searchpanel[0], view_id)
 
@@ -1155,7 +1158,7 @@ actual arch.
         :rtype: boolean
         """
         return any(
-            (attr in ('data-oe-model', 'group') or (attr.startswith('t-')))
+            (attr in ('data-oe-model', 'groups') or (attr.startswith('t-')))
             for attr in node.attrib
         )
 

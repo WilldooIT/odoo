@@ -18,7 +18,7 @@ class HrExpense(models.Model):
 
     @api.model
     def _default_employee_id(self):
-        return self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        return self.env.user.employee_id
 
     @api.model
     def _default_product_uom_id(self):
@@ -35,7 +35,7 @@ class HrExpense(models.Model):
             res = "['|', ('company_id', '=', False), ('company_id', '=', company_id)]"  # Then, domain accepts everything
         elif self.user_has_groups('hr_expense.group_hr_expense_team_approver') and self.env.user.employee_ids:
             user = self.env.user
-            employee = user.employee_ids[0]
+            employee = self.env.user.employee_id
             res = [
                 '|', '|', '|',
                 ('department_id.manager_id', '=', employee.id),
@@ -44,8 +44,8 @@ class HrExpense(models.Model):
                 ('expense_manager_id', '=', user.id),
                 '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id),
             ]
-        elif self.env.user.employee_ids:
-            employee = self.env.user.employee_ids[0]
+        elif self.env.user.employee_id:
+            employee = self.env.user.employee_id
             res = [('id', '=', employee.id), '|', ('company_id', '=', False), ('company_id', '=', employee.company_id.id)]
         return res
 
@@ -151,11 +151,12 @@ class HrExpense(models.Model):
         if self.product_id:
             if not self.name:
                 self.name = self.product_id.display_name or ''
-            self.unit_amount = self.product_id.price_compute('standard_price')[self.product_id.id]
+            if not self.attachment_number or (self.attachment_number and not self.unit_amount):
+                self.unit_amount = self.product_id.price_compute('standard_price')[self.product_id.id]
             self.product_uom_id = self.product_id.uom_id
             self.tax_ids = self.product_id.supplier_taxes_id.filtered(lambda tax: tax.company_id == self.company_id)  # taxes only from the same company
             account = self.product_id.product_tmpl_id._get_product_accounts()['expense']
-            if account:
+            if account and self.is_editable:
                 self.account_id = account
 
     @api.onchange('company_id')
@@ -414,6 +415,8 @@ class HrExpense(models.Model):
                     'expense_id': expense.id,
                     'partner_id': partner_id,
                     'currency_id': expense.currency_id.id if different_currency else False,
+                    'analytic_account_id': expense.analytic_account_id.id if tax['analytic'] else False,
+                    'analytic_tag_ids': [(6, 0, expense.analytic_tag_ids.ids)] if tax['analytic'] else False,
                 }
                 total_amount -= amount
                 total_amount_currency -= move_line_tax_values['amount_currency'] or amount
@@ -444,6 +447,8 @@ class HrExpense(models.Model):
 
         move_line_values_by_expense = self._get_account_move_line_values()
 
+        move_to_keep_draft = self.env['account.move']
+
         for expense in self:
             company_currency = expense.company_id.currency_id
             different_currency = expense.currency_id != company_currency
@@ -472,7 +477,7 @@ class HrExpense(models.Model):
                     'partner_type': 'supplier',
                     'journal_id': journal.id,
                     'payment_date': expense.date,
-                    'state': 'reconciled',
+                    'state': 'draft',
                     'currency_id': expense.currency_id.id if different_currency else journal_currency.id,
                     'amount': abs(total_amount_currency) if different_currency else abs(total_amount),
                     'name': expense.name,
@@ -484,10 +489,18 @@ class HrExpense(models.Model):
             expense.sheet_id.write({'account_move_id': move.id})
 
             if expense.payment_mode == 'company_account':
+                if journal.post_at == 'pay_val':
+                    payment.state = 'reconciled'
+                elif journal.post_at == 'bank_rec':
+                    payment.state = 'posted'
+                    move_to_keep_draft |= move
+
                 expense.sheet_id.paid_expense_sheets()
 
         # post the moves
         for move in move_group_by_sheet.values():
+            if move in move_to_keep_draft:
+                continue
             move.post()
 
         return move_group_by_sheet

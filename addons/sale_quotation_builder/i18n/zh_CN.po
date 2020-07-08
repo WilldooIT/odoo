@@ -13,7 +13,7 @@
 # keecome <7017511@qq.com>, 2019
 # snow wang <147156565@qq.com>, 2019
 # inspur qiuguodong <qiuguodong@inspur.com>, 2019
-# Jeffery CHEN Fan <jeffery9@gmail.com>, 2019
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2020
 # guohuadeng <guohuadeng@hotmail.com>, 2020
 # 
 msgid ""
@@ -318,4 +318,4 @@ msgstr ""
 #. module: sale_quotation_builder
 #: model_terms:ir.ui.view,arch_db:sale_quotation_builder.brand_promotion
 msgid "portal"
-msgstr ""
+msgstr "门户"

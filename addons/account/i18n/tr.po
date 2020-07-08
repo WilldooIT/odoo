@@ -14,7 +14,6 @@
 # Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2019
 # Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2019
 # Metin Akın <aknmetin@gmail.com>, 2019
-# Martin Trigaux, 2019
 # Buket Şeker <buket_skr@hotmail.com>, 2019
 # Umur Akın <umura@projetgrup.com>, 2019
 # Levent Karakaş <levent@mektup.at>, 2019
@@ -22,13 +21,14 @@
 # Yedigen, 2019
 # Ediz Duman <neps1192@gmail.com>, 2019
 # abc Def <hdogan1974@gmail.com>, 2020
+# Martin Trigaux, 2020
 # Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-05 12:32+0000\n"
+"POT-Creation-Date: 2020-04-27 09:21+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
 "Last-Translator: Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2020\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
@@ -931,6 +931,14 @@ msgstr ""
 "Seçili bir hesap ekstresi satırı, bir hesap hareketiyle zaten uzlaştırılmış."
 
 #. module: account
+#: code:addons/account/models/account.py:0
+#, python-format
+msgid "A tag defined to be used on taxes must always have a country set."
+msgstr ""
+"Vergilerde kullanılmak üzere tanımlanan bir etiket için her zaman bir ülke "
+"ayarlanmış olmalıdır."
+
+#. module: account
 #: model:ir.model.constraint,message:account.constraint_account_fiscal_position_tax_tax_src_dest_uniq
 msgid "A tax fiscal position could be defined only one time on same taxes."
 msgstr ""
@@ -1398,10 +1406,18 @@ msgstr "Mali Durumun Hesap Haritalandırması"
 
 #. module: account
 #: code:addons/account/wizard/account_accrual_accounting.py:0
+#, python-format
+msgid ""
+"Accrual Adjusting Entries ({percent}%% recognized) have been created for "
+"this invoice on {date}"
+msgstr ""
+
+#. module: account
+#: code:addons/account/wizard/account_accrual_accounting.py:0
 #: code:addons/account/wizard/account_accrual_accounting.py:0
 #, python-format
-msgid "Accrual Adjusting Entry (%s recognized) for invoice: %s"
-msgstr "Tahakkuk Ayarlama Kaydı"
+msgid "Accrual Adjusting Entry (%s%% recognized) for invoice: %s"
+msgstr ""
 
 #. module: account
 #: code:addons/account/wizard/account_accrual_accounting.py:0
@@ -1957,6 +1973,7 @@ msgid "Analytic Acc."
 msgstr "Analitik Hes."
 
 #. module: account
+#: model:ir.model,name:account.model_account_analytic_account
 #: model:ir.model.fields,field_description:account.field_account_invoice_report__analytic_account_id
 #: model:ir.model.fields,field_description:account.field_account_move_line__analytic_account_id
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__analytic_account_id
@@ -1989,7 +2006,7 @@ msgstr "Analitik Maliyetler"
 #. module: account
 #: model:ir.ui.menu,name:account.menu_action_analytic_lines_tree
 msgid "Analytic Items"
-msgstr "Analitik Maddeler"
+msgstr "Analitik Kayıtları"
 
 #. module: account
 #: model:ir.model,name:account.model_account_analytic_line
@@ -2002,6 +2019,7 @@ msgid "Analytic Lines"
 msgstr "Analitik Satırları"
 
 #. module: account
+#: model:ir.model,name:account.model_account_analytic_tag
 #: model:ir.model.fields,field_description:account.field_account_move_line__analytic_tag_ids
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__analytic_tag_ids
 #: model:ir.model.fields,field_description:account.field_res_config_settings__group_analytic_tags
@@ -2390,6 +2408,7 @@ msgstr "Hesap Ekstresi.pdf"
 
 #. module: account
 #: model:ir.actions.act_window,name:account.action_bank_statement_tree
+#: model_terms:ir.ui.view,arch_db:account.view_account_bank_journal_form
 msgid "Bank Statements"
 msgstr "Banka Hesap Ekstreleri"
 
@@ -2593,7 +2612,7 @@ msgstr "Ürün Kategorisine Göre"
 #. module: account
 #: model:ir.filters,name:account.filter_invoice_report_salespersons
 msgid "By Salespersons"
-msgstr "Satış Personellerine Göre"
+msgstr "Satış Personeline Göre"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_fiscal_position__active
@@ -3194,6 +3213,7 @@ msgstr "İş Ortağını ilgilendiren şirketler"
 #: model:ir.model.fields,field_description:account.field_account_accrual_accounting_wizard__company_id
 #: model:ir.model.fields,field_description:account.field_account_bank_statement__company_id
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__company_id
+#: model:ir.model.fields,field_description:account.field_account_cash_rounding__company_id
 #: model:ir.model.fields,field_description:account.field_account_common_journal_report__company_id
 #: model:ir.model.fields,field_description:account.field_account_common_report__company_id
 #: model:ir.model.fields,field_description:account.field_account_financial_year_op__company_id
@@ -3382,7 +3402,7 @@ msgstr "Kontrol-Hesap"
 #: code:addons/account/models/company.py:0
 #, python-format
 msgid "Corrupted data on journal entry with id %s."
-msgstr "Id ile yevmiye girdisindeki bozuk veriler"
+msgstr "Id ile yevmiye girdisindeki bozuk veriler %s."
 
 #. module: account
 #: model:account.account.type,name:account.data_account_type_direct_costs
@@ -4915,7 +4935,7 @@ msgstr "Mali Bilgi"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Fiscal Localization"
-msgstr "Mali Koşul Yerelleştirmesi"
+msgstr "Mali Yerelleştirme"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position_account_template__position_id
@@ -5202,7 +5222,7 @@ msgstr "Hepsi ters kayıt"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_move_reversal__refund_method__modify
 msgid "Full refund and new draft invoice"
-msgstr "Hepsi ters kayıt ve yeni taslak fatura "
+msgstr "Hepsi iade ve yeni taslak fatura "
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
@@ -5863,6 +5883,13 @@ msgstr ""
 #: model:ir.model.fields,help:account.field_account_move_line__tax_line_id
 msgid "Indicates that this journal item is a tax line"
 msgstr "Bu yevmiye kaleminin bir vergi satırı olduğunu gösterir"
+
+#. module: account
+#. openerp-web
+#: code:addons/account/static/src/xml/account_payment.xml:0
+#, python-format
+msgid "Info"
+msgstr "Info"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_line_form
@@ -6676,7 +6703,7 @@ msgstr "Son Şifre"
 #: model:ir.model.fields,field_description:account.field_tax_adjustments_wizard____last_update
 #: model:ir.model.fields,field_description:account.field_validate_account_move____last_update
 msgid "Last Modified on"
-msgstr "Son Güncelleme"
+msgstr "Son Düzenleme"
 
 #. module: account
 #. openerp-web
@@ -7375,12 +7402,6 @@ msgid "Next Number Prefix"
 msgstr "Sonraki Numara Öneki"
 
 #. module: account
-#: code:addons/account/models/account_bank_statement.py:545
-#, python-format
-msgid "No default debit and credit account defined on journal %s (ids: %s)"
-msgstr "Yevmiyede tanımlı varsayılan borç ve alacak hesabı yok %s (ids: %s)"
-
-#. module: account
 #: model:ir.model.fields,field_description:account.field_account_move_line__blocked
 msgid "No Follow-up"
 msgstr "Takip Yok"
@@ -7395,6 +7416,12 @@ msgstr "Uyarı Yok"
 #, python-format
 msgid "No attachment was provided"
 msgstr "Hiçbir ek sağlanmadı"
+
+#. module: account
+#: code:addons/account/models/account_bank_statement.py:0
+#, python-format
+msgid "No default debit and credit account defined on journal %s (ids: %s)."
+msgstr ""
 
 #. module: account
 #: code:addons/account/models/account_reconcile_model.py:0
@@ -7479,6 +7506,7 @@ msgstr "Vadesi Gelmemiş"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_invoice_report__invoice_payment_state__not_paid
 #: model:ir.model.fields.selection,name:account.selection__account_move__invoice_payment_state__not_paid
+#: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
 msgid "Not Paid"
 msgstr "Ödenmemiş"
 
@@ -7783,6 +7811,7 @@ msgid "Opening Unit Numbers"
 msgstr "Açılış Birim Numaraları"
 
 #. module: account
+#: code:addons/account/models/account.py:0
 #: code:addons/account/models/account.py:0
 #, python-format
 msgid "Opening balance"
@@ -8166,6 +8195,7 @@ msgid "Payment Method Type"
 msgstr "Ödeme Yöntem Türü"
 
 #. module: account
+#: model_terms:ir.ui.view,arch_db:account.view_account_bank_journal_form
 #: model_terms:ir.ui.view,arch_db:account.view_account_journal_form
 msgid "Payment Method Types"
 msgstr "Ödeme Yöntem Türleri"
@@ -8578,6 +8608,13 @@ msgstr ""
 "önceden ayarlanmış"
 
 #. module: account
+#. openerp-web
+#: code:addons/account/static/src/xml/account_reconciliation.xml:0
+#, python-format
+msgid "Presets config"
+msgstr ""
+
+#. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid "Preview"
 msgstr "Önizle"
@@ -8780,7 +8817,7 @@ msgstr "Sebep..."
 #: model:ir.ui.menu,name:account.menu_action_move_in_receipt_type
 #: model:ir.ui.menu,name:account.menu_action_move_out_receipt_type
 msgid "Receipts"
-msgstr "Mal Kabul"
+msgstr "Makbuzlar"
 
 #. module: account
 #: model:account.account.type,name:account.data_account_type_receivable
@@ -8941,7 +8978,7 @@ msgstr "Bu ödemeyi yapan belgenin referansı. Örneğin. Numara, dosya adı vb.
 #: model:ir.ui.menu,name:account.menu_action_move_in_refund_type
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "Refund"
-msgstr "İade"
+msgstr "İade/Fiyat Farkı"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -8952,7 +8989,7 @@ msgstr "İade Oluşturuldu"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_reversal
 msgid "Refund Date"
-msgstr "İade Tarihi"
+msgstr "Ters Kayıt Tarihi"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax_repartition_line__refund_tax_id
@@ -9771,10 +9808,13 @@ msgstr ""
 "kullanışlı olacaktır."
 
 #. module: account
+#. openerp-web
+#: code:addons/account/static/src/xml/account_reconciliation.xml:0
 #: model:ir.actions.act_window,name:account.action_account_config
 #: model:ir.actions.act_window,name:account.action_open_settings
 #: model:ir.ui.menu,name:account.menu_account_config
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
+#, python-format
 msgid "Settings"
 msgstr "Ayarlar"
 
@@ -10126,11 +10166,6 @@ msgid "Supplier Rank"
 msgstr "Tedarikçi Sıralaması"
 
 #. module: account
-#: model:ir.actions.act_window,name:account.res_partner_action_supplier
-msgid "Suppliers"
-msgstr "Tedarikçiler"
-
-#. module: account
 #: model:ir.actions.server,name:account.action_move_switch_invoice_to_credit_note
 msgid "Switch into refund/credit note"
 msgstr "İade/fiyat farkına geçme"
@@ -10297,7 +10332,7 @@ msgstr "Vergi Grupları"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "Tax ID"
-msgstr "Vergi Kimliği"
+msgstr "Vergi No"
 
 #. module: account
 #. openerp-web
@@ -11036,8 +11071,8 @@ msgid ""
 "The currency of the bank statement line must be different than the statement"
 " currency."
 msgstr ""
-"Banka hesap özeti satırının para birimi, hesap özeti para biriminden farklı "
-"olmalıdır."
+"Banka hesap ekstresi satırının para birimi, hesap ekstresi para biriminden "
+"farklı olmalıdır."
 
 #. module: account
 #: code:addons/account/models/account.py:0
@@ -12428,6 +12463,7 @@ msgid "Vendor Taxes"
 msgstr "Tedarikçi Vergileri"
 
 #. module: account
+#: model:ir.actions.act_window,name:account.res_partner_action_supplier
 #: model:ir.ui.menu,name:account.menu_account_supplier
 #: model:ir.ui.menu,name:account.menu_finance_payables
 #: model_terms:ir.ui.view,arch_db:account.res_partner_view_search
@@ -12712,6 +12748,54 @@ msgstr ""
 "iletişimi buradan ayarlayabilirsiniz."
 
 #. module: account
+#: code:addons/account/models/account.py:0
+#, python-format
+msgid ""
+"You can't change the company of your account since there are some journal "
+"items linked to it."
+msgstr ""
+"Hesabınıza bağlı bazı yevmiye kalemleri olduğundan hesabınızın şirketini "
+"değiştiremezsiniz."
+
+#. module: account
+#: code:addons/account/models/account.py:0
+#, python-format
+msgid ""
+"You can't change the company of your journal since there are some journal "
+"entries linked to it."
+msgstr ""
+"Yevmiyenize bağlı bazı yevmiye kayıtları olduğundan yevmiyenizin şirketini "
+"değiştiremezsiniz."
+
+#. module: account
+#: code:addons/account/models/account.py:0
+#, python-format
+msgid ""
+"You can't change the company of your tax since there are some journal items "
+"linked to it."
+msgstr ""
+"Vergiye bağlı bazı yevmiye kayıtları olduğundan verginin şirketini "
+"değiştiremezsiniz."
+
+#. module: account
+#: code:addons/account/models/account_analytic_line.py:0
+#, python-format
+msgid ""
+"You can't set a different company on your analytic account since there are "
+"some journal items linked to it."
+msgstr ""
+"Bağlı bazı yevmiye kalemleri olduğundan, analitik hesabının şirketini "
+"değiştiremezsiniz. "
+
+#. module: account
+#: code:addons/account/models/account_analytic_line.py:0
+#, python-format
+msgid ""
+"You can't set a different company on your analytic tags since there are some"
+" journal items linked to it."
+msgstr ""
+
+#. module: account
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid ""
@@ -12990,6 +13074,12 @@ msgstr ""
 "Toplam tutarı negatif olan bir faturayı doğrulayamazsınız. Bunun yerine bir "
 "iade/fiyat farkı oluşturmanız gerekir. Bir fiyat farkı veya iadeye "
 "dönüştürmek için eylem menüsünü kullanın."
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid "You don't have the access rights to post an invoice."
+msgstr ""
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -13291,53 +13381,3 @@ msgstr "tedarikçi faturaları"
 #: model_terms:ir.ui.view,arch_db:account.view_bank_statement_form
 msgid "→ Count"
 msgstr "→ Say"
-
-#. module: account
-#: code:addons/account/models/account.py:0
-#, python-format
-msgid ""
-"You can't change the company of your account since there are some journal "
-"items linked to it."
-msgstr ""
-"Hesabınıza bağlı bazı yevmiye kalemleri olduğundan hesabınızın şirketini "
-"değiştiremezsiniz."
-
-#. module: account
-#: code:addons/account/models/account.py:0
-#, python-format
-msgid ""
-"You can't change the company of your journal since there are some journal "
-"entries linked to it."
-msgstr ""
-"Yevmiyenize bağlı bazı yevmiye kayıtları olduğundan yevmiyenizin şirketini "
-"değiştiremezsiniz."
-
-#. module: account
-#: code:addons/account/models/account.py:0
-#, python-format
-msgid ""
-"You can't change the company of your tax since there are some journal items "
-"linked to it."
-msgstr ""
-"Vergiye bağlı bazı yevmiye kayıtları olduğundan verginin şirketini "
-"değiştiremezsiniz."
-
-#. module: account
-#: code:addons/account/models/account_analytic_line.py:0
-#, python-format
-msgid ""
-"You can't set a different company on your analytic account since there are "
-"some journal items linked to it."
-msgstr ""
-"Bağlı bazı yevmiye kalemleri olduğundan, analitik hesabının şirketini "
-"değiştiremezsiniz. "
-
-#. module: account
-#. module: account
-#: code:addons/account/models/account_analytic_line.py:0
-#: code:addons/account/models/account.py:56
-#, python-format, python-format
-msgid "A tag defined to be used on taxes must always have a country set."
-msgstr ""
-"Vergilerde kullanılmak üzere tanımlanan bir etiket için her zaman bir ülke "
-"ayarlanmış olmalıdır."

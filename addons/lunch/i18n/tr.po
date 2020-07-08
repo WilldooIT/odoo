@@ -18,6 +18,8 @@
 # Ediz Duman <neps1192@gmail.com>, 2019
 # Yedigen, 2019
 # abc Def <hdogan1974@gmail.com>, 2020
+# Murat Durmuş <muratd@projetgrup.com>, 2020
+# Tugay Hatıl <tugayh@projetgrup.com>, 2020
 # Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2020
 # 
 msgid ""
@@ -285,7 +287,7 @@ msgstr "Yönetici"
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__name
 msgid "Alert Name"
-msgstr ""
+msgstr "Uyarı Adı"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__mode__alert
@@ -706,7 +708,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__favorite_user_ids
 msgid "Favorite User"
-msgstr ""
+msgstr "Favori Kullanıcı"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_follower_ids
@@ -879,7 +881,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier____last_update
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping____last_update
 msgid "Last Modified on"
-msgstr "Son Güncelleme"
+msgstr "Son Düzenleme"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_report__last_order_date
@@ -1354,7 +1356,7 @@ msgstr "Ürün"
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_report__is_available_at
 msgid "Product Availability"
-msgstr ""
+msgstr "Kullanılabilir Ürün"
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_product_category_action

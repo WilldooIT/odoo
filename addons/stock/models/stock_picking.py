@@ -553,7 +553,8 @@ class Picking(models.Model):
         defaults = self.default_get(['name', 'picking_type_id'])
         picking_type = self.env['stock.picking.type'].browse(vals.get('picking_type_id', defaults.get('picking_type_id')))
         if vals.get('name', '/') == '/' and defaults.get('name', '/') == '/' and vals.get('picking_type_id', defaults.get('picking_type_id')):
-            vals['name'] = picking_type.sequence_id.next_by_id()
+            if picking_type.sequence_id:
+                vals['name'] = picking_type.sequence_id.next_by_id()
 
         # As the on_change in one2many list is WIP, we will overwrite the locations on the stock moves here
         # As it is a create the format will be a list of (0, 0, dict)
@@ -571,7 +572,12 @@ class Picking(models.Model):
                     if 'picking_type_id' not in move[2] or move[2]['picking_type_id'] != picking_type.id:
                         move[2]['picking_type_id'] = picking_type.id
                         move[2]['company_id'] = picking_type.company_id.id
+        # make sure to write `schedule_date` *after* the `stock.move` creation in
+        # order to get a determinist execution of `_set_scheduled_date`
+        scheduled_date = vals.pop('scheduled_date', False)
         res = super(Picking, self).create(vals)
+        if scheduled_date:
+            res.with_context(mail_notrack=True).write({'scheduled_date': scheduled_date})
         res._autoconfirm_picking()
 
         # set partner as follower
@@ -947,7 +953,11 @@ class Picking(models.Model):
         for pack in self.mapped('move_line_ids').filtered(lambda x: x.product_id and not x.move_id):
             quantity_done.setdefault(pack.product_id.id, 0)
             quantity_done[pack.product_id.id] += pack.product_uom_id._compute_quantity(pack.qty_done, pack.product_id.uom_id)
-        return any(quantity_done[x] < quantity_todo.get(x, 0) for x in quantity_done)
+        prec = self.env["decimal.precision"].precision_get("Product Unit of Measure")
+        return any(
+            float_compare(quantity_done[x], quantity_todo.get(x, 0), precision_digits=prec,) == -1
+            for x in quantity_done
+        )
 
     def _autoconfirm_picking(self):
         # Clean-up the context key to avoid forcing the creation of immediate transfers.

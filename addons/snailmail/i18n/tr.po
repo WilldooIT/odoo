@@ -10,6 +10,7 @@
 # Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2019
 # Buket Şeker <buket_skr@hotmail.com>, 2019
 # Murat Durmuş <muratd@projetgrup.com>, 2020
+# Tugay Hatıl <tugayh@projetgrup.com>, 2020
 # Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2020
 # 
 msgid ""
@@ -121,7 +122,7 @@ msgstr ""
 #: code:addons/snailmail/static/src/xml/thread.xml:0
 #, python-format
 msgid "Awaiting Dispatch"
-msgstr ""
+msgstr "Gönderim Bekliyor"
 
 #. module: snailmail
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter__duplex
@@ -246,7 +247,7 @@ msgstr "Oluşturulma"
 #. module: snailmail
 #: model_terms:ir.ui.view,arch_db:snailmail.snailmail_letter_cancel
 msgid "Discard delivery failures"
-msgstr ""
+msgstr "Teslimat hatalarını sil"
 
 #. module: snailmail
 #: model:ir.actions.act_window,name:snailmail.snailmail_letter_cancel_action
@@ -256,7 +257,7 @@ msgstr ""
 #. module: snailmail
 #: model:ir.model,name:snailmail.model_snailmail_letter_cancel
 msgid "Dismiss notification for resend by model"
-msgstr ""
+msgstr "Modele göre yeniden gönderme bildirimini reddet"
 
 #. module: snailmail
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter__display_name
@@ -313,7 +314,7 @@ msgstr ""
 #. module: snailmail
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter_cancel__help_message
 msgid "Help message"
-msgstr ""
+msgstr "Yardım mesajı"
 
 #. module: snailmail
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter__id
@@ -347,7 +348,7 @@ msgstr "Bilgi"
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter_format_error____last_update
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter_missing_required_fields____last_update
 msgid "Last Modified on"
-msgstr "Son Güncelleme"
+msgstr "Son Düzenleme"
 
 #. module: snailmail
 #: model:ir.model.fields,field_description:snailmail.field_snailmail_letter__write_uid

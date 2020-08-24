@@ -174,6 +174,11 @@ var ActionManager = Widget.extend({
             options.clear_breadcrumbs = action.target === 'main' ||
                                         options.clear_breadcrumbs;
 
+            if (action.target === 'same') {
+                options.replace_last_action = true
+                options.keep_controller = true
+            };
+
             self._preprocessAction(action, options);
 
             return self._handleAction(action, options).then(function () {
@@ -737,7 +742,10 @@ var ActionManager = Widget.extend({
                        self.controllers[controllerID].actionID === controller.actionID;
             });
         }
-        this._removeControllers(toDestroy);
+        // keep_controller is an unfortunate extra needed to compensate for Odoo heavyhanded cleanup
+        if (! options.keep_controller) {
+            this._removeControllers(toDestroy)
+        }
         this.controllerStack.push(controller.jsID);
 
         // append the new controller to the DOM

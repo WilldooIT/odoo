@@ -164,4 +164,16 @@
             action="stock.action_stock_scrap"
             sequence="25"/>
 
+
+    <record id='stock_move_line_view_search'>
+        <field name="name"> stock.move.line.search</field>
+        <field name="model">stock.move.line</field>
+        <field name='inherit_id'>stock.stock_move_line_view_search</field>
+        <field name="arch" type="xml">
+            <filter name="manufacturing" position='after'>
+                <filter string="Consumed" name="consumed" domain="[('production_id', '!=', False), ('picking_id', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
 </odoo>

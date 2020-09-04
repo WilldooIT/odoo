@@ -58,7 +58,7 @@
         parent="mrp_planning_menu_root"
         sequence="135"/>
 
-    <record id='stock_move_line_view_search'>
+    <record id='stock_move_line_view_search' model='ir.ui.view'>
         <field name="name"> stock.move.line.search</field>
         <field name="model">stock.move.line</field>
         <field name='inherit_id'>stock.stock_move_line_view_search</field>

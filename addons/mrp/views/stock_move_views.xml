@@ -66,6 +66,9 @@
             <filter name="manufacturing" position='after'>
                 <filter string="Consumed" name="consumed" domain="[('production_id', '!=', False), ('picking_id', '=', False)]"/>
             </filter>
+            <filter name="manufacturing" position='replace'>
+                <filter string="Manufacturing" name="manufacturing" domain="[('move_id.production_id', '!=', False)]"/>
+            </filter>
         </field>
     </record>
 

@@ -519,9 +519,6 @@ class IrMailServer(models.Model):
                  MailDeliveryException and logs root cause.
         """
 
-        if not db_whitelisted(self.env.cr.dbname):
-            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
-
         # Use the default bounce address **only if** no Return-Path was
         # provided by caller.  Caller may be using Variable Envelope Return
         # Path (VERP) to detect no-longer valid email addresses.
@@ -558,6 +555,10 @@ class IrMailServer(models.Model):
         if getattr(threading.currentThread(), 'testing', False) or self.env.registry.in_test_mode():
             _test_logger.info("skip sending email in test mode")
             return message['Message-Id']
+
+        # Do not send mails if the DB is not whitelisted
+        if not db_whitelisted(self.env.cr.dbname):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
 
         try:
             message_id = message['Message-Id']

@@ -6857,6 +6857,8 @@ msgid ""
 "A partner with the same <span><span class=\"o_vat_label\">Tax "
 "ID</span></span> already exists ("
 msgstr ""
+"Já existe um contacto com o mesmo <span><span "
+"class=\"o_vat_label\">NIF</span></span> ("
 
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_10
@@ -7129,6 +7131,8 @@ msgid ""
 "Account holder name, in case it is different than the name of the Account "
 "Holder"
 msgstr ""
+"Nome do titular da conta, no caso de ser diferente do nome do contacto "
+"Titular da Conta"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_accounting
@@ -25290,13 +25294,13 @@ msgstr ""
 #: code:addons/base/models/res_users.py:0
 #, python-format
 msgid "You cannot activate the superuser."
-msgstr ""
+msgstr "Não é possível ativar o superuser."
 
 #. module: base
 #: code:addons/base/models/res_partner.py:0
 #, python-format
 msgid "You cannot archive a contact linked to an internal user."
-msgstr ""
+msgstr "Não é possível arquivar um contacto ligado a um utilizador interno."
 
 #. module: base
 #: code:addons/base/models/res_partner.py:0

@@ -523,6 +523,10 @@ class IrMailServer(models.Model):
             _test_logger.info("skip sending email in test mode")
             return message['Message-Id']
 
+        # Do not send mails if the DB is not whitelisted
+        if not db_whitelisted(self.env.cr.dbname):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
+
         try:
             message_id = message['Message-Id']
             smtp = smtp_session

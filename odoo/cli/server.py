@@ -33,6 +33,12 @@ __version__ = odoo.release.version
 # Also use the `odoo` logger for the main script.
 _logger = logging.getLogger('odoo')
 
+try:
+    import googlecloudprofiler
+except:
+    googlecloudprofiler = False
+    _logger.info('Google Cloud Profiler is installed.')
+
 def check_root_user():
     """Warn if the process's user is 'root' (on POSIX system)."""
     if os.name == 'posix':
@@ -128,6 +134,23 @@ def main(args):
     report_configuration()
 
     config = odoo.tools.config
+
+    # Google Cloud Profiler initialization. It starts a daemon thread which continuously
+    # collects and uploads profiles. Best done as early as possible.
+    if googlecloudprofiler and config.get('enable_gcloud_profiler'):
+        try:
+            service_name = '%s_%s' % (os.uname().nodename, config.get('instance_name', 'live'))
+            googlecloudprofiler.start(
+                service=service_name,
+                service_version=__version__,
+                # verbose is the logging level. 0-error, 1-warning, 2-info,
+                # 3-debug. It defaults to 0 (error) if not set.
+                verbose=int(config.get('gcloud_profiler_log_level', 1)),
+                # project_id must be set if not running on GCP.
+                project_id=config.get('gcloud_project'),
+            )
+        except Exception as e:
+            _logger.error('Failed to initialise Google Cloud Profiler - %s' % e)
 
     # the default limit for CSV fields in the module is 128KiB, which is not
     # quite sufficient to import images to store in attachment. 500MiB is a

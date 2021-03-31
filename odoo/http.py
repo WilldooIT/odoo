@@ -1009,6 +1009,11 @@ class OpenERPSession(sessions.Session):
         request.disable_db = False
 
         user = request.env(user=uid)['res.users'].browse(uid)
+
+        if hasattr(user, "session_mandatory"):
+            if not user._auth_session_ok():
+                return uid
+
         if not user._mfa_url():
             self.finalize()
 

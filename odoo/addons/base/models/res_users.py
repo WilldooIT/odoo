@@ -1167,6 +1167,19 @@ class GroupsView(models.Model):
             # use a dummy view during install/upgrade/uninstall
             xml = E.field(name="groups_id", position="after")
 
+            # ===================================================================================
+            # This is called before dependent modules... reset any dependent views...
+            # Needed for willdoo / ringsend mods.
+            xml_inherit = E.xpath(expr='/*[1]')
+            xml_content = etree.tostring(xml_inherit, pretty_print=True, encoding="unicode")
+            for inh_view in view.inherit_children_ids:
+                if xml_content != inh_view.arch:  # avoid useless xml validation if no change
+                    new_context = dict(inh_view._context)
+                    new_context.pop('install_filename', None)  # don't set arch_fs for this computed view
+                    new_context['lang'] = None
+                    inh_view.with_context(new_context).write({'arch': xml_content})
+            # ===================================================================================
+
         else:
             group_no_one = view.env.ref('base.group_no_one')
             group_employee = view.env.ref('base.group_user')

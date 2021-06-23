@@ -50,7 +50,7 @@ class ProductProduct(models.Model):
         dummy, bom_lines = bom.explode(self, 1)
         bom_lines = {line: data for line, data in bom_lines}
         value = 0
-        for move in stock_moves:
+        for move in stock_moves.filtered('bom_line_id'):
             bom_line = move.bom_line_id
             bom_line_data = bom_lines[bom_line]
             bom_line_qty = bom_line_data['qty']

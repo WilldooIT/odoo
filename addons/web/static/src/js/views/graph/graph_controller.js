@@ -11,6 +11,11 @@ var GroupByMenuMixin = require('web.GroupByMenuMixin');
 var qweb = core.qweb;
 
 var GraphController = AbstractController.extend(GroupByMenuMixin,{
+    custom_events: _.extend({}, AbstractController.prototype.custom_events, {
+        item_selected: '_onItemSelected',
+        open_view: '_onOpenView',
+    }),
+
     /**
      * @override
      * @param {Widget} parent
@@ -28,6 +33,10 @@ var GraphController = AbstractController.extend(GroupByMenuMixin,{
         // this parameter condition the appearance of a 'Group By'
         // button in the control panel owned by the graph view.
         this.isEmbedded = params.isEmbedded;
+
+        // views to use in the action triggered when the graph is clicked
+        this.views = params.views;
+        this.title = params.title;
 
         // this parameter determines what is the list of fields
         // that may be used within the groupby menu available when
@@ -209,6 +218,71 @@ var GraphController = AbstractController.extend(GroupByMenuMixin,{
             field = $target.data('field');
             this._setMeasure(field);
         }
+    },
+
+    /**
+     * @private
+     * @param {OdooEvent} ev
+     */
+    _onItemSelected(ev) {
+        const item = ev.data.item;
+        if (this.isEmbedded && item.itemType === 'groupBy') {
+            const fieldName = item.id;
+            const optionId = ev.data.option && ev.data.option.id;
+            const activeGroupBys = this.model.get().groupBy;
+            if (optionId) {
+                const normalizedGroupBys = this._normalizeActiveGroupBys(activeGroupBys);
+                const index = normalizedGroupBys.findIndex(ngb =>
+                    ngb.fieldName === fieldName && ngb.interval === optionId);
+                if (index === -1) {
+                    activeGroupBys.push(fieldName + ':' + optionId);
+                } else {
+                    activeGroupBys.splice(index, 1);
+                }
+            } else {
+                const groupByFieldNames = activeGroupBys.map(gb => gb.split(':')[0]);
+                const indexOfGroupby = groupByFieldNames.indexOf(fieldName);
+                if (indexOfGroupby === -1) {
+                    activeGroupBys.push(fieldName);
+                } else {
+                    activeGroupBys.splice(indexOfGroupby, 1);
+                }
+            }
+            this.update({ groupBy: activeGroupBys });
+            this.groupByMenu.update({
+                items: this._getGroupBys(activeGroupBys),
+            });
+        } else if (item.itemType === 'measure') {
+            this.update({ measure: item.fieldName });
+            this.measures.forEach(m => m.isActive = m.fieldName === item.fieldName);
+            this.measureMenu.update({ items: this.measures });
+        }
+    },
+
+    /**
+     * @private
+     * @param {OdooEvent} ev
+     * @param {Array[]} ev.data.domain
+     */
+    _onOpenView(ev) {
+        ev.stopPropagation();
+        const state = this.model.get();
+        const context = Object.assign({}, state.context);
+        Object.keys(context).forEach(x => {
+            if (x === 'group_by' || x.startsWith('search_default_')) {
+                delete context[x];
+            }
+        });
+        this.do_action({
+            context: context,
+            domain: ev.data.domain,
+            name: this.title,
+            res_model: this.modelName,
+            target: 'current',
+            type: 'ir.actions.act_window',
+            view_mode: 'list',
+            views: this.views,
+        });
     },
 });
 

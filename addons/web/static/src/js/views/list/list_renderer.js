@@ -875,6 +875,7 @@ var ListRenderer = BasicRenderer.extend({
             'data-toggle': "dropdown",
             'data-display': "static",
             'aria-expanded': false,
+            'aria-label': _t('Optional columns'),
         });
         $a.appendTo($optionalColumnsDropdown);
 
@@ -893,6 +894,7 @@ var ListRenderer = BasicRenderer.extend({
                 (config.isDebug() ? (' (' + col.attrs.name + ')') : '');
             var $checkbox = dom.renderCheckbox({
                 text: txt,
+                role: "menuitemcheckbox",
                 prop: {
                     name: col.attrs.name,
                     checked: _.contains(self.optionalColumnsEnabled, col.attrs.name),
@@ -1137,12 +1139,12 @@ var ListRenderer = BasicRenderer.extend({
         ev.stopPropagation();
         this.$('.o_optional_columns .dropdown-toggle').dropdown('toggle');
         // Explicitly set left of the optional column dropdown as it is pushed inside
-        // this.$el, so we need to position it at the end of top right/left corner based
-        // on language direction.
-        var left = _t.database.parameters.direction === 'rtl' ?
-            this.$('.o_optional_columns .o_optional_columns_dropdown').width() :
-            this.$("table").width();
-        this.$('.o_optional_columns').css("left", left);
+        // this.$el, so we need to position it at the end of top left corner in case of
+        // rtl language direction.
+        if (_t.database.parameters.direction === 'rtl') {
+            var left = this.$('.o_optional_columns .o_optional_columns_dropdown').width();
+            this.$('.o_optional_columns').css("left", left);
+        }
     },
     /**
      * Manages the keyboard events on the list. If the list is not editable, when the user navigates to

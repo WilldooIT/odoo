@@ -25,13 +25,14 @@ QUnit.module('Search View', {
                     foo: {string: "Foo", type: "char", store: true, sortable: true},
                     bar: {string: "Bar", type: "many2one", relation: 'partner'},
                     float_field: {string: "Float", type: "float", group_operator: 'sum'},
+                    bool: {string: "Boolean", type: 'boolean'},
                 },
                 records: [
-                    {id: 1, display_name: "First record", foo: "yop", bar: 2, date_field: "2017-01-25", birthday: "1983-07-15", float_field: 1},
-                    {id: 2, display_name: "Second record", foo: "blip", bar: 1, date_field: "2017-01-24", birthday: "1982-06-04",float_field: 2},
-                    {id: 3, display_name: "Third record", foo: "gnap", bar: 1, date_field: "2017-01-13", birthday: "1985-09-13",float_field: 1.618},
-                    {id: 4, display_name: "Fourth record", foo: "plop", bar: 2, date_field: "2017-02-25", birthday: "1983-05-05",float_field: -1},
-                    {id: 5, display_name: "Fifth record", foo: "zoup", bar: 2, date_field: "2016-01-25", birthday: "1800-01-01",float_field: 13},
+                    {id: 1, display_name: "First record", foo: "yop", bar: 2, bool: true, date_field: "2017-01-25", birthday: "1983-07-15", float_field: 1},
+                    {id: 2, display_name: "Second record", foo: "blip", bar: 1, bool: false, date_field: "2017-01-24", birthday: "1982-06-04", float_field: 2},
+                    {id: 3, display_name: "Third record", foo: "gnap", bar: 1, bool: false, date_field: "2017-01-13", birthday: "1985-09-13", float_field: 1.618},
+                    {id: 4, display_name: "Fourth record", foo: "plop", bar: 2, bool: true, date_field: "2017-02-25", birthday: "1983-05-05", float_field: -1},
+                    {id: 5, display_name: "Fifth record", foo: "zoup", bar: 2, bool: true, date_field: "2016-01-25", birthday: "1800-01-01", float_field: 13},
                 ],
             },
             pony: {
@@ -692,7 +693,7 @@ QUnit.module('Search View', {
     QUnit.module('FilterMenu');
 
     QUnit.test('Search date and datetime fields. Support of timezones', async function (assert) {
-        assert.expect(4);
+        assert.expect(6);
 
         this.data.partner.fields.birth_datetime = {string: "Birth DateTime", type: "datetime", store: true, sortable: true};
         this.data.partner.records = this.data.partner.records.slice(0,-1); // exclude wrong date record
@@ -707,6 +708,7 @@ QUnit.module('Search View', {
             }
         }
 
+        var TZOffset = 360;
         var searchReadSequence = 0;
         var actionManager = await createActionManager({
             actions: [{
@@ -732,15 +734,16 @@ QUnit.module('Search View', {
             data: this.data,
             session: {
                 getTZOffset: function() {
-                    return 360;
+                    return TZOffset;
                 }
             },
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/search_read') {
-                    if (searchReadSequence === 1) { // The 0th time is at loading
+                    if (searchReadSequence === 1 || searchReadSequence === 3) {
+                        // The 0th time is at loading and 2nd time at closing of first facet
                         assert.deepEqual(args.domain, [["birthday", "=", "1983-07-15"]],
                             'A date should stay what the user has input, but transmitted in server\'s format');
-                    } else if (searchReadSequence === 3) { // the 2nd time is at closing the first facet
+                    } else if (searchReadSequence === 5) { // the 4th time is at closing the first facet
                         assert.deepEqual(args.domain, [["birth_datetime", "=", "1983-07-14 18:00:00"]],
                             'A datetime should be transformed in UTC and transmitted in server\'s format');
                     }
@@ -763,7 +766,19 @@ QUnit.module('Search View', {
         // Close Facet
         await testUtils.dom.click($('.o_searchview_facet .o_facet_remove'));
 
+        TZOffset = -360;
+        $autocomplete = $('.o_searchview_input');
+        await stringToEvent($autocomplete, '07/15/1983');
+        await testUtils.fields.triggerKey('up', $autocomplete, 'enter');
+
+        assert.equal($('.o_searchview_facet .o_facet_values').text().trim(), '07/15/1983',
+            'The format of the date in the facet should be in locale');
+
+        // Close Facet
+        await testUtils.dom.click($('.o_searchview_facet .o_facet_remove'));
+
         // DateTime case
+        TZOffset = 360;
         $autocomplete = $('.o_searchview_input');
         await stringToEvent($autocomplete, '07/15/1983 00:00:00');
         await testUtils.fields.triggerKey('down', $autocomplete, 'down');
@@ -1745,6 +1760,84 @@ QUnit.module('Search View', {
             '.o_searchview_autocomplete',
             "should display autocomplete dropdown menu on paste in search view"
         );
+
+        actionManager.destroy();
+    });
+
+    QUnit.test('"null" as autocomplete value', async function (assert) {
+        assert.expect(4);
+
+        var actionManager = await createActionManager({
+            actions: this.actions,
+            archs: this.archs,
+            data: this.data,
+            mockRPC: function (route, args) {
+                if (route === '/web/dataset/search_read') {
+                    assert.step(JSON.stringify(args.domain));
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+
+        await actionManager.doAction(11);
+
+        actionManager.$('.o_searchview_input').val('null');
+        testUtils.fields.triggerKey('press', $('.o_searchview_input'), 'n');
+        testUtils.fields.triggerKey('press', $('.o_searchview_input'), 'u');
+        testUtils.fields.triggerKey('press', $('.o_searchview_input'), 'l');
+        testUtils.fields.triggerKey('press', $('.o_searchview_input'), 'l');
+        await testUtils.nextTick();
+
+        assert.strictEqual(actionManager.$('.o_searchview_autocomplete .o-selection-focus').text(),
+            "Search Foo for: null");
+
+        actionManager.$('.o_searchview_input').trigger($.Event('keydown', { which: $.ui.keyCode.ENTER, keyCode: $.ui.keyCode.ENTER }));
+        await testUtils.nextTick();
+
+        assert.verifySteps([
+            JSON.stringify([]), // initial search
+            JSON.stringify([["foo", "ilike", "null"]]),
+        ]);
+
+        actionManager.destroy();
+    });
+
+    QUnit.test('autocomplete a boolean value', async function (assert) {
+        assert.expect(5);
+
+        this.archs['partner,8,search'] = '<search><field name="bool"/></search>';
+
+        var actionManager = await createActionManager({
+            actions: this.actions,
+            archs: this.archs,
+            data: this.data,
+            mockRPC: function (route, args) {
+                if (route === '/web/dataset/search_read') {
+                    assert.step(JSON.stringify(args.domain));
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+
+        await actionManager.doAction(11);
+
+        actionManager.$('.o_searchview_input').val('y');
+        testUtils.fields.triggerKey('press', $('.o_searchview_input'), 'y');
+        await testUtils.nextTick();
+
+        assert.containsN(actionManager, '.o_searchview_autocomplete li', 2);
+
+        // select "Yes" and validate
+        actionManager.$('.o_searchview_input').trigger($.Event('keydown', { which: $.ui.keyCode.DOWN, keyCode: $.ui.keyCode.DOWN }));
+        await testUtils.nextTick();
+        assert.strictEqual(actionManager.$('.o_searchview_autocomplete .o-indent.o-selection-focus').text(), "Yes");
+        actionManager.$('.o_searchview_input').trigger($.Event('keydown', { which: $.ui.keyCode.ENTER, keyCode: $.ui.keyCode.ENTER }));
+        await testUtils.nextTick();
+
+        assert.verifySteps([
+            JSON.stringify([]), // initial search
+            JSON.stringify([["bool", "=", true]]),
+        ]);
 
         actionManager.destroy();
     });

@@ -451,6 +451,14 @@ class TestFields(common.TransactionCase):
         b.unlink()
         self.assertEqual((a + b + c + d).exists(), a)
 
+    def test_12_recursive_tree(self):
+        foo = self.env['test_new_api.recursive.tree'].create({'name': 'foo'})
+        self.assertEqual(foo.display_name, 'foo()')
+        bar = foo.create({'name': 'bar', 'parent_id': foo.id})
+        self.assertEqual(foo.display_name, 'foo(bar())')
+        baz = foo.create({'name': 'baz', 'parent_id': bar.id})
+        self.assertEqual(foo.display_name, 'foo(bar(baz()))')
+
     def test_12_cascade(self):
         """ test computed field depending on computed field """
         message = self.env.ref('test_new_api.message_0_0')
@@ -491,7 +499,6 @@ class TestFields(common.TransactionCase):
         (foo1 + foo2).write({'display_name': 'Bar'})
         self.assertEqual(foo1.name, 'Bar')
         self.assertEqual(foo2.name, 'Bar')
-
 
         # create/write on 'foo' should only invoke the compute method
         log = []
@@ -568,16 +575,6 @@ class TestFields(common.TransactionCase):
         with self.assertRaises(AccessError):
             foo.with_user(user).display_name = 'Forbidden'
 
-    def test_13_inverse_access(self):
-        """ test access rights on inverse fields """
-        foo = self.env['test_new_api.category'].create({'name': 'Foo'})
-        user = self.env['res.users'].create({'name': 'Foo', 'login': 'foo'})
-        self.assertFalse(user.has_group('base.group_system'))
-        # add group on non-stored inverse field
-        self.patch(type(foo).display_name, 'groups', 'base.group_system')
-        with self.assertRaises(AccessError):
-            foo.with_user(user).display_name = 'Forbidden'
-
     def test_14_search(self):
         """ test search on computed fields """
         discussion = self.env.ref('test_new_api.discussion_0')
@@ -620,6 +617,38 @@ class TestFields(common.TransactionCase):
         with self.assertRaises(ValidationError):
             discussion.name = "X"
             discussion.flush()
+
+    def test_15_constraint_inverse(self):
+        """ test constraint method on normal field and field with inverse """
+        log = []
+        model = self.env['test_new_api.compute.inverse'].with_context(log=log, log_constraint=True)
+
+        # create/write with normal field only
+        log.clear()
+        record = model.create({'baz': 'Hi'})
+        self.assertCountEqual(log, ['constraint'])
+
+        log.clear()
+        record.write({'baz': 'Ho'})
+        self.assertCountEqual(log, ['constraint'])
+
+        # create/write with inverse field only
+        log.clear()
+        record = model.create({'bar': 'Hi'})
+        self.assertCountEqual(log, ['inverse', 'constraint'])
+
+        log.clear()
+        record.write({'bar': 'Ho'})
+        self.assertCountEqual(log, ['inverse', 'constraint'])
+
+        # create/write with both fields only
+        log.clear()
+        record = model.create({'bar': 'Hi', 'baz': 'Hi'})
+        self.assertCountEqual(log, ['inverse', 'constraint'])
+
+        log.clear()
+        record.write({'bar': 'Ho', 'baz': 'Ho'})
+        self.assertCountEqual(log, ['inverse', 'constraint'])
 
     def test_20_float(self):
         """ test rounding of float fields """
@@ -1443,6 +1472,32 @@ class TestFields(common.TransactionCase):
         self.assertNotEqual(new_disc.participants, disc.participants)
         self.assertEqual(new_disc.participants._origin, disc.participants)
 
+        # provide many2one field as a dict of values; the value is a new record
+        # with the given 'id' as origin (if given, of course)
+        new_msg = disc.messages.new({
+            'discussion': {'name': disc.name},
+        })
+        self.assertTrue(new_msg.discussion)
+        self.assertFalse(new_msg.discussion.id)
+        self.assertFalse(new_msg.discussion._origin)
+
+        new_msg = disc.messages.new({
+            'discussion': {'name': disc.name, 'id': disc.id},
+        })
+        self.assertTrue(new_msg.discussion)
+        self.assertFalse(new_msg.discussion.id)
+        self.assertEqual(new_msg.discussion._origin, disc)
+
+        # check convert_to_write
+        tag = self.env['test_new_api.multi.tag'].create({'name': 'Foo'})
+        rec = self.env['test_new_api.multi'].create({
+            'lines': [(0, 0, {'tags': [(6, 0, tag.ids)]})],
+        })
+        new = rec.new(origin=rec)
+        self.assertEqual(new.lines.tags._origin, rec.lines.tags)
+        vals = new._convert_to_write(new._cache)
+        self.assertEqual(vals['lines'], [(6, 0, rec.lines.ids)])
+
     def test_41_new_compute(self):
         """ Check recomputation of fields on new records. """
         move = self.env['test_new_api.move'].create({
@@ -1481,6 +1536,13 @@ class TestFields(common.TransactionCase):
         self.assertEqual(len(new_move.line_ids), 1)
         self.assertFalse(new_move.line_ids.id)
         self.assertEqual(new_move.line_ids.quantity, 2)
+
+        # assign line to new move without origin
+        new_move = move.new()
+        new_move.line_ids = line
+        self.assertFalse(new_move.line_ids.id)
+        self.assertEqual(new_move.line_ids._origin, line)
+        self.assertEqual(new_move.line_ids.move_id, new_move)
 
     @mute_logger('odoo.addons.base.models.ir_model')
     def test_41_new_related(self):
@@ -1552,8 +1614,8 @@ class TestFields(common.TransactionCase):
             [('author_partner.name', '=', 'Marc Demo')])
         self.assertEqual(messages, self.env.ref('test_new_api.message_0_1'))
 
-    def test_60_x2many_domain(self):
-        """ test the cache consistency of a x2many field with a domain """
+    def test_60_one2many_domain(self):
+        """ test the cache consistency of a one2many field with a domain """
         discussion = self.env.ref('test_new_api.discussion_0')
         message = discussion.messages[0]
         self.assertNotIn(message, discussion.important_messages)
@@ -1566,6 +1628,31 @@ class TestFields(common.TransactionCase):
         discussion.write({'very_important_messages': [(5,)]})
         self.assertFalse(discussion.very_important_messages)
         self.assertFalse(message.exists())
+
+    def test_60_many2many_domain(self):
+        """ test the cache consistency of a many2many field with a domain """
+        discussion = self.env.ref('test_new_api.discussion_0')
+        category = self.env['test_new_api.category'].create({'name': "Foo"})
+        discussion.categories = category
+        discussion.flush()
+        discussion.invalidate_cache()
+
+        # patch the many2many field to give it a domain (this simply avoids
+        # adding yet another test model)
+        field = discussion._fields['categories']
+        self.patch(field, 'domain', [('color', '!=', 42)])
+        self.registry.setup_models(self.cr)
+
+        # the category is in the many2many
+        self.assertIn(category, discussion.categories)
+
+        # modify the category; it should not longer be in the many2many
+        category.color = 42
+        self.assertNotIn(category, discussion.categories)
+
+        # modify again the category; it should be back in the many2many
+        category.color = 69
+        self.assertIn(category, discussion.categories)
 
     def test_70_x2many_write(self):
         discussion = self.env.ref('test_new_api.discussion_0')

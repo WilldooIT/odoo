@@ -24,6 +24,8 @@
 # Maryam Samadi Nia <samadi@zaka.ir>, 2020
 # Martin Trigaux, 2020
 # Hamed Mohammadi <hamed@dehongi.com>, 2020
+# Mohsen Mohammadi <iammohsen.123@gmail.com>, 2021
+# rahim agh <rahim.aghareb@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -31,7 +33,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-01 12:20+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
-"Last-Translator: Hamed Mohammadi <hamed@dehongi.com>, 2020\n"
+"Last-Translator: rahim agh <rahim.aghareb@gmail.com>, 2021\n"
 "Language-Team: Persian (https://www.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -835,6 +837,10 @@ msgid ""
 "                your cash box, and then post entries when money comes in or\n"
 "                goes out of the cash box."
 msgstr ""
+"یک ثبت نقدی به شما امکان ثبت وجوه نقد در دفتر ثبت نقدی را می‌دهد. این ویژگی "
+"راه حل ساده‌ای برای پیگیری روزانه پرداخت‌های نقدی است. شما می‌توانید "
+"سکه‌هایی که در دخل خود دارید را وارد کنید و ورودی و خروجی به دخل را نیز به "
+"صورت مدخل جدید ثبت کنید."
 
 #. module: account
 #: code:addons/account/models/account_payment_term.py:0
@@ -946,6 +952,10 @@ msgid ""
 "either in 'Tax-Included' or in 'Tax-Excluded' mode\n"
 "(or switch twice the mode if you are already in the desired one)."
 msgstr ""
+"یک کاربر نمی‌تواند هم مالیات ‌B2B داشته باشد و هم مالیات B2C.\n"
+"شما باید به تنظیمات عمومی بروید و انتخاب کنید که قیمت‌ محصولات\n"
+"را درحالت 'با مالیات' یا 'بدون مالیات' نمایش دهد\n"
+"(یا اگر در حالت مورد نظر هستید یکبار به حالت دیگر تغییر دهید و دوباره حالت مورد نظر برگردید)."
 
 #. module: account
 #: model:res.groups,name:account.group_warning_account
@@ -1879,7 +1889,7 @@ msgstr "مقدار:"
 #: code:addons/account/models/account.py:0
 #, python-format
 msgid "An Off-Balance account can not be reconcilable"
-msgstr ""
+msgstr "یک حساب تراز نشده نمی‌تواند تهاتر شود"
 
 #. module: account
 #: code:addons/account/models/account.py:0
@@ -7719,6 +7729,12 @@ msgid "Original Bills"
 msgstr ""
 
 #. module: account
+#: model_terms:ir.ui.view,arch_db:account.view_move_line_tree
+#: model_terms:ir.ui.view,arch_db:account.view_move_line_tree_grouped
+msgid "Original Currency"
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_move_line__payment_id
 msgid "Originator Payment"
 msgstr ""
@@ -8433,7 +8449,7 @@ msgstr ""
 #: code:addons/account/static/src/xml/account_reconciliation.xml:0
 #, python-format
 msgid "Presets config"
-msgstr ""
+msgstr "پیکربندی از قبل تنظیم شده"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -9899,6 +9915,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"وضعیت بر اساس فعالیت\n"
+"Overdue: Due date is already passed\n"
+"امروز:تاریخ فعالیت امروز است\n"
+"برنامه‌ریزی شده: برنامه‌های آینده."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.onboarding_bank_account_step
@@ -10892,8 +10912,11 @@ msgstr ""
 #. module: account
 #: code:addons/account/models/account.py:0
 #, python-format
-msgid "The holder of a journal's bank account must be the company (%s)."
-msgstr "صاحب روزنامه حساب بانکی باید این شرکت باشد (%s)."
+msgid ""
+"The holder of the bank account of a \"Bank\" type journal must be the company (%s).\n"
+"However, the holder of \"%s\" is \"%s\".\n"
+"Please select another bank account or change the holder of \"%s\"."
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_journal__code
@@ -12633,6 +12656,12 @@ msgstr ""
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #, python-format
+msgid "The entry %s (id %s) is already posted."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
 msgid "You need to add a line before posting."
 msgstr "شما قبل از ارسال باید یک سطر اضافه کنید."
 
@@ -12854,6 +12883,15 @@ msgstr "شرکت مادر"
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "to check"
 msgstr "برای بررسی"
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The chosen journal has a type that is not compatible with your invoice type."
+" Sales operations should go to 'sale' journals, and purchase operations to "
+"'purchase' ones."
+msgstr ""
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form

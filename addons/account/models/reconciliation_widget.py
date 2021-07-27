@@ -252,6 +252,7 @@ class AccountReconciliation(models.AbstractModel):
 
         results.update({
             'statement_name': len(bank_statements_left) == 1 and bank_statements_left.name or False,
+            'statement_id': len(bank_statements_left) == 1 and bank_statements_left.id or False,
             'journal_id': bank_statements and bank_statements[0].journal_id.id or False,
             'notifications': []
         })
@@ -493,6 +494,7 @@ class AccountReconciliation(models.AbstractModel):
             '|', ('account_id.code', 'ilike', search_str),
             '|', ('move_id.name', 'ilike', search_str),
             '|', ('move_id.ref', 'ilike', search_str),
+            '|', ('payment_id.name', 'ilike', search_str),
             '|', ('date_maturity', 'like', parse_date(self.env, search_str)),
             '&', ('name', '!=', '/'), ('name', 'ilike', search_str)
         ]

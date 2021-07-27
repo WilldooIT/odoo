@@ -50,6 +50,8 @@ class AccountMoveLine(models.Model):
             For Vendor Bill flow, if the product has a 'erinvoice policy' and is a cost, then we will find the SO on which reinvoice the AAL
         """
         self.ensure_one()
+        if self.sale_line_ids:
+            return False
         uom_precision_digits = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         return float_compare(self.credit or 0.0, self.debit or 0.0, precision_digits=uom_precision_digits) != 1 and self.product_id.expense_policy not in [False, 'no']
 
@@ -116,6 +118,7 @@ class AccountMoveLine(models.Model):
 
         # create the sale lines in batch
         new_sale_lines = self.env['sale.order.line'].create(sale_line_values_to_create)
+        new_sale_lines._onchange_discount()
 
         # build result map by replacing index with newly created record of sale.order.line
         result = {}

@@ -734,7 +734,7 @@ var FieldDateRange = InputField.extend({
      */
     _onDateRangePickerShow() {
         this._onScroll = ev => {
-            if (!this.$pickerContainer.get(0).contains(ev.target)) {
+            if (!config.device.isMobile && !this.$pickerContainer.get(0).contains(ev.target)) {
                 let data = this.$el.data('daterangepicker');
                 if (data) {
                     data.hide();
@@ -1699,7 +1699,7 @@ var AbstractFieldBinary = AbstractField.extend({
         this._super.apply(this, arguments);
         this.fields = record.fields;
         this.useFileAPI = !!window.FileReader;
-        this.max_upload_size = 25 * 1024 * 1024; // 25Mo
+        this.max_upload_size = session.max_file_upload_size || 128 * 1024 * 1024;
         if (!this.useFileAPI) {
             var self = this;
             this.fileupload_id = _.uniqueId('o_fileupload');

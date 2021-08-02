@@ -330,7 +330,8 @@ class AccountPayment(models.Model):
         for pay in self:
             available_partner_bank_accounts = pay.partner_id.bank_ids.filtered(lambda x: x.company_id in (False, pay.company_id))
             if available_partner_bank_accounts:
-                pay.partner_bank_id = available_partner_bank_accounts[0]._origin
+                if pay.partner_bank_id not in available_partner_bank_accounts:
+                    pay.partner_bank_id = available_partner_bank_accounts[0]._origin
             else:
                 pay.partner_bank_id = False
 
@@ -752,8 +753,8 @@ class AccountPayment(models.Model):
             for line in writeoff_lines:
                 line_ids_commands.append((2, line.id))
 
-            if writeoff_lines:
-                line_ids_commands.append((0, 0, line_vals_list[2]))
+            for extra_line_vals in line_vals_list[2:]:
+                line_ids_commands.append((0, 0, extra_line_vals))
 
             # Update the existing journal items.
             # If dealing with multiple write-off lines, they are dropped and a new one is generated.

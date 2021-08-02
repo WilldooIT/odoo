@@ -1212,7 +1212,7 @@ msgstr "Actie"
 #: code:addons/website/static/src/js/backend/res_config_settings.js:0
 #, python-format
 msgid "Activate anyway"
-msgstr ""
+msgstr "Toch activeren"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_theme_ir_ui_view__active
@@ -2033,6 +2033,13 @@ msgstr "Bekijk nu en ontvang € 20 korting op uw eerste order."
 #, python-format
 msgid "Check your configuration."
 msgstr "Controleer uw configuratie."
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Check your connexion and try again"
+msgstr "Controleer uw verbinding en probeer het opnieuw"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_catalog
@@ -3041,7 +3048,7 @@ msgstr "Toon de website wanneer de bezoeker dit domein bezoekt"
 #: code:addons/website/static/src/js/backend/res_config_settings.js:0
 #, python-format
 msgid "Do not activate"
-msgstr ""
+msgstr "Niet activeren"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_banner
@@ -3328,6 +3335,13 @@ msgstr "Lege veldnaam in %r"
 #, python-format
 msgid "Enable billing on your Google Project"
 msgstr "Facturering op uw Google-project mogelijk maken"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Enter an API Key"
+msgstr "Voer een API-sleutel in"
 
 #. module: website
 #. openerp-web
@@ -4597,6 +4611,13 @@ msgstr "Interactiegeschiedenis"
 #: model_terms:ir.ui.view,arch_db:website.s_table_of_content
 msgid "Intuitive system"
 msgstr "Intuïtief systeem"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Invalid API Key. The following error was returned by Google:"
+msgstr "Ongeldige API-sleutel. De volgende fout is geretourneerd door Google:"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team

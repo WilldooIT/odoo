@@ -193,12 +193,14 @@ msgid ""
 "            Changing its name will break these calls."
 msgstr ""
 ".\n"
-"            Modificare il suo nome interromperà queste chiamate."
+"            La modifica del nome interromperà le chiamate."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_timeline
 msgid "...and switch the timeline contents to fit your needs."
 msgstr ""
+"...e scambiare i contenuti della sequenza temporale per adattarsi alle "
+"proprie esigenze."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.default_csv
@@ -935,7 +937,7 @@ msgid ""
 "MyCompany</span>"
 msgstr ""
 "<span class=\"s_blockquote_author\"><b>Irene ROSSI</b> • AD di "
-"MiaAzienda</span>"
+"MyCompany</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_quotes_carousel
@@ -944,7 +946,7 @@ msgid ""
 "MyCompany</span>"
 msgstr ""
 "<span class=\"s_blockquote_author\"><b>Maria ROSSI</b> • AD di "
-"MiaAzienda</span>"
+"MyCompany</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_blockquote
@@ -954,7 +956,7 @@ msgid ""
 "MyCompany</span>"
 msgstr ""
 "<span class=\"s_blockquote_author\"><b>Mario ROSSI</b> • AD di "
-"MiaAzienda</span>"
+"MyCompany</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -1140,6 +1142,8 @@ msgid ""
 "A timeline is a graphical representation on which important events are "
 "marked."
 msgstr ""
+"Una sequenza temporale è una rappresentazione grafica nella quale vengono "
+"indicati eventi importanti."
 
 #. module: website
 #: model:ir.model.fields,help:website.field_website_visitor__is_connected
@@ -1556,6 +1560,8 @@ msgstr "Frecce"
 #, python-format
 msgid "As promised, we will offer 4 free tickets to our next summit."
 msgstr ""
+"Come promesso, offriamo 4 biglietti gratuiti per la nostra prossima "
+"conferenza."
 
 #. module: website
 #: model:ir.model,name:website.model_web_editor_assets
@@ -1627,7 +1633,7 @@ msgstr "BSgzTvR5L1GB9jriT451iTN4huVPxHmltG6T6eo"
 #: model_terms:ir.ui.view,arch_db:website.color_combinations_debug_view
 #: model_terms:website.page,arch_db:website.color_combinations_debug_page
 msgid "BTS Base Colors"
-msgstr ""
+msgstr "Colori di base BTS"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_popup_options
@@ -2015,6 +2021,13 @@ msgstr "Ottieni 20€ di sconto sul primo ordine se effettui ora il pagamento."
 #, python-format
 msgid "Check your configuration."
 msgstr "Controlla la configurazione."
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Check your connexion and try again"
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_catalog
@@ -2537,7 +2550,7 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:website.field_website_route__create_date
 #: model:ir.model.fields,field_description:website.field_website_snippet_filter__create_date
 msgid "Created on"
-msgstr "Creato il"
+msgstr "Data creazione"
 
 #. module: website
 #. openerp-web
@@ -3001,7 +3014,7 @@ msgstr "Visualizzare la descrizione del sito web"
 #: model:ir.model.fields,help:website.field_res_config_settings__website_logo
 #: model:ir.model.fields,help:website.field_website__logo
 msgid "Display this logo on the website."
-msgstr ""
+msgstr "Visualizza il logo nel sito web."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -3302,6 +3315,13 @@ msgstr "Nome campo vuoto in %r"
 #, python-format
 msgid "Enable billing on your Google Project"
 msgstr "Abilita fatturazione sul progetto Google"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Enter an API Key"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -4030,7 +4050,7 @@ msgstr "Menù hamburger"
 #: code:addons/website/static/src/snippets/s_countdown/000.xml:0
 #, python-format
 msgid "Happy Odoo Anniversary!"
-msgstr ""
+msgstr "Felice anniversario Odoo!"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website__has_social_default_image
@@ -4554,6 +4574,13 @@ msgid "Intuitive system"
 msgstr "Sistema intuitivo"
 
 #. module: website
+#. openerp-web
+#: code:addons/website/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Invalid API Key. The following error was returned by Google:"
+msgstr ""
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
 msgid "Iris Joe, CFO"
 msgstr "Irene Verdi - Direttore finanziario"
@@ -4939,7 +4966,7 @@ msgstr "Menù sinistro"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.footer_custom
 msgid "Legal"
-msgstr ""
+msgstr "Legale"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_chart_options
@@ -5014,7 +5041,7 @@ msgstr "Pulsante con link"
 #: model_terms:ir.ui.view,arch_db:website.color_combinations_debug_view
 #: model_terms:website.page,arch_db:website.color_combinations_debug_page
 msgid "Link text"
-msgstr ""
+msgstr "Testo del link"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_visitor__partner_id
@@ -5076,7 +5103,7 @@ msgstr "Caricamento..."
 #: model_terms:ir.ui.view,arch_db:website.template_footer_contact
 #: model_terms:ir.ui.view,arch_db:website.template_footer_minimalist
 msgid "Logo of MyCompany"
-msgstr ""
+msgstr "Logo MyCompany"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -5380,7 +5407,7 @@ msgstr "Sito web personale"
 #: model_terms:ir.ui.view,arch_db:website.template_footer_links
 #: model_terms:ir.ui.view,arch_db:website.template_footer_minimalist
 msgid "MyCompany"
-msgstr ""
+msgstr "MyCompany"
 
 #. module: website
 #. openerp-web
@@ -5712,7 +5739,7 @@ msgstr "Ordina ora"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.template_footer_links
 msgid "Our Company"
-msgstr ""
+msgstr "La nostra azienda"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_references
@@ -6000,7 +6027,7 @@ msgstr "Preferenze"
 #: model_terms:ir.ui.view,arch_db:website.color_combinations_debug_view
 #: model_terms:website.page,arch_db:website.color_combinations_debug_page
 msgid "Preset"
-msgstr ""
+msgstr "Preimpostazioni"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.kanban_contain
@@ -6653,7 +6680,7 @@ msgstr "Invia e-mail"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.template_footer_contact
 msgid "Send us a message"
-msgstr ""
+msgstr "Inviaci un messaggio"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
@@ -6855,7 +6882,7 @@ msgstr "Presentazione"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Slogan"
-msgstr ""
+msgstr "Slogan"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
@@ -7206,7 +7233,7 @@ msgstr "Posizione testo"
 #: model_terms:ir.ui.view,arch_db:website.color_combinations_debug_view
 #: model_terms:website.page,arch_db:website.color_combinations_debug_page
 msgid "Text muted. Lorem <b>ipsum dolor sit amet</b>, consectetur."
-msgstr ""
+msgstr "Testo disabilitato. Lorem <b>ipsum dolor sit amet</b>, consectetur."
 
 #. module: website
 #: code:addons/website/controllers/backend.py:0
@@ -7290,7 +7317,7 @@ msgstr "La lingua della parola chiave e di quelle correlate."
 #. module: website
 #: model:ir.model.fields,help:website.field_website_snippet_filter__limit
 msgid "The limit is the maximum number of records retrieved"
-msgstr ""
+msgstr "Il limite corrisponde al numero massimo di record recuperati"
 
 #. module: website
 #: code:addons/website/models/website_snippet_filter.py:0
@@ -7540,7 +7567,7 @@ msgstr "Durata della cache per la pagina. (0 = nessuna cache)"
 #: code:addons/website/static/src/snippets/s_countdown/000.xml:0
 #, python-format
 msgid "Time's up! You can now visit"
-msgstr ""
+msgstr "Tempo scaduto! Adesso puoi visitare"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_facebook_page_options
@@ -7990,6 +8017,8 @@ msgid ""
 "Use this timeline as a part of your resume, to show your visitors what "
 "you've done in the past."
 msgstr ""
+"Usare la sequenza temporale come parte di un riassunto, per mostrare ai "
+"visitatori ciò che è stato fatto in passato."
 
 #. module: website
 #. openerp-web
@@ -8195,6 +8224,8 @@ msgstr "Data visita"
 #, python-format
 msgid "Visit our Facebook page to know if you are one of the lucky winners."
 msgstr ""
+"Per sapere se sei uno dei fortunati vincitori visita la nostra pagina "
+"Facebook."
 
 #. module: website
 #: model:ir.model,name:website.model_website_track
@@ -8283,7 +8314,7 @@ msgid ""
 "We are a team of passionate people whose goal is to improve everyone's life through disruptive products. We build great products to solve your business problems.\n"
 "                            <br/><br/>Our products are designed for small to medium size companies willing to optimize their performance."
 msgstr ""
-"Siamo un team di entusiasti che si sono posti l'obiettivo di migliorare la vita di tutti grazie a prodotti rivoluzionari. Sviluppiamo soluzioni eccellenti per risolvere i problemi della tua azienda.\n"
+"Siamo un team di persone che, con passione, si è posto l'obiettivo di migliorare la vita di tutti grazie a prodotti rivoluzionari. Sviluppiamo soluzioni eccellenti per risolvere i problemi della tua azienda.\n"
 "                            <br/><br/>I nostri prodotti sono progettati per le piccole e medie imprese che vogliono ottimizzare le proprie prestazioni."
 
 #. module: website
@@ -8294,11 +8325,11 @@ msgid ""
 "problems. Our products are designed for small to medium size companies "
 "willing to optimize their performance."
 msgstr ""
-"Siamo un team di entusiasti che si sono posti l'obiettivo di migliorare la "
-"vita di tutti grazie a prodotti rivoluzionari. Sviluppiamo soluzioni "
-"eccellenti per risolvere i problemi della tua azienda. I nostri prodotti "
-"sono progettati per le piccole e medie imprese che vogliono ottimizzare le "
-"proprie prestazioni."
+"Siamo un team di persone che, con passione, si è posto l'obiettivo di "
+"migliorare la vita di tutti grazie a prodotti rivoluzionari. Sviluppiamo "
+"soluzioni eccellenti per risolvere i problemi della tua azienda. I nostri "
+"prodotti sono progettati per le piccole e medie imprese che vogliono "
+"ottimizzare le proprie prestazioni."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.template_footer_headline
@@ -8306,9 +8337,9 @@ msgid ""
 "We are a team of passionate people whose goal is to improve everyone's "
 "life.<br/>Our services are designed for small to medium size companies."
 msgstr ""
-"Siamo un team di entusiasti che si sono posti l'obiettivo di migliorare la "
-"vita di tutti.<br/>I nostri servizi sono progettati per le piccole e medie "
-"imprese."
+"Siamo un team di persone che, con passione, si è posto l'obiettivo di "
+"migliorare la vita di tutti.<br/>I nostri servizi sono progettati per le "
+"piccole e medie imprese."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_progress_bar
@@ -8542,7 +8573,7 @@ msgstr "Visitatore sito web n° %s"
 #: model:ir.cron,cron_name:website.website_visitor_cron
 #: model:ir.cron,name:website.website_visitor_cron
 msgid "Website Visitor : Archive old visitors"
-msgstr ""
+msgstr "Visitatore sito web: archivia vecchi visitatori"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_faq_collapse
@@ -8727,7 +8758,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_timeline
 msgid "You can edit, duplicate..."
-msgstr ""
+msgstr "È possibile modificare, duplicare..."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -9078,7 +9109,7 @@ msgstr "titolo, h1"
 #: model_terms:ir.ui.view,arch_db:website.template_footer_contact
 #: model_terms:ir.ui.view,arch_db:website.template_footer_descriptive
 msgid "hello@mycompany.com"
-msgstr ""
+msgstr "hello@mycompany.com"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
@@ -9259,7 +9290,7 @@ msgstr "referenze"
 #: model_terms:ir.ui.view,arch_db:website.color_combinations_debug_view
 #: model_terms:website.page,arch_db:website.color_combinations_debug_page
 msgid "text link"
-msgstr ""
+msgstr "link di testo"
 
 #. module: website
 #: model:ir.model.fields.selection,name:website.selection__theme_ir_ui_view__inherit_id__theme_ir_ui_view
@@ -9271,7 +9302,7 @@ msgstr "theme.ir.ui.view"
 #: code:addons/website/static/src/snippets/s_countdown/000.xml:0
 #, python-format
 msgid "this page"
-msgstr "questa"
+msgstr "questa pagina"
 
 #. module: website
 #. openerp-web

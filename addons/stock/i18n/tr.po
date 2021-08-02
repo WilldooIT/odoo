@@ -658,7 +658,7 @@ msgstr "Aktivite Durumu"
 #: model:ir.model.fields,field_description:stock.field_stock_picking__activity_type_icon
 #: model:ir.model.fields,field_description:stock.field_stock_production_lot__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Aktivite Tipi Simgesi"
+msgstr "Aktivite Simge Tipi "
 
 #. module: stock
 #: model_terms:ir.actions.act_window,help:stock.action_production_lot_form
@@ -7315,6 +7315,13 @@ msgstr "Okunmamış Mesaj Sayacı"
 #: model_terms:ir.ui.view,arch_db:stock.vpicktree
 msgid "Unreserve"
 msgstr "Rezervasyonu Kaldır"
+
+#. module: stock
+#: code:addons/stock/models/stock_inventory.py:0
+#: code:addons/stock/models/stock_inventory.py:0
+#, python-format
+msgid "Unsupported search on %s outside of an Inventory Adjustment"
+msgstr ""
 
 #. module: stock
 #: model:ir.ui.menu,name:stock.menu_stock_uom_form_action

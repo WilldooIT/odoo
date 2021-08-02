@@ -311,6 +311,7 @@ class SaleOrder(models.Model):
         """ For service and consumable, we only take the min dates. This method is extended in sale_stock to
             take the picking_policy of SO into account.
         """
+        self.mapped("order_line")  # Prefetch indication
         for order in self:
             dates_list = []
             for line in order.order_line.filtered(lambda x: x.state != 'cancel' and not x._is_delivery() and not x.display_type):
@@ -460,7 +461,7 @@ class SaleOrder(models.Model):
                 }
             }
 
-    @api.onchange('pricelist_id')
+    @api.onchange('pricelist_id', 'order_line')
     def _onchange_pricelist_id(self):
         if self.order_line and self.pricelist_id and self._origin.pricelist_id != self.pricelist_id:
             self.show_update_pricelist = True
@@ -695,7 +696,7 @@ Reason(s) of this behavior could be:
             invoiceable_lines = order._get_invoiceable_lines(final)
 
             if not any(not line.display_type for line in invoiceable_lines):
-                raise self._nothing_to_invoice_error()
+                continue
 
             invoice_line_vals = []
             down_payment_section_added = False
@@ -708,7 +709,7 @@ Reason(s) of this behavior could be:
                             sequence=invoice_item_sequence,
                         )),
                     )
-                    dp_section = True
+                    down_payment_section_added = True
                     invoice_item_sequence += 1
                 invoice_line_vals.append(
                     (0, 0, line._prepare_invoice_line(
@@ -727,6 +728,7 @@ Reason(s) of this behavior could be:
         if not grouped:
             new_invoice_vals_list = []
             invoice_grouping_keys = self._get_invoice_grouping_keys()
+            invoice_vals_list = sorted(invoice_vals_list, key=lambda x: [x.get(grouping_key) for grouping_key in invoice_grouping_keys])
             for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: [x.get(grouping_key) for grouping_key in invoice_grouping_keys]):
                 origins = set()
                 payment_refs = set()

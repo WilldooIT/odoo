@@ -255,7 +255,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__notification_moment__am
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__moment__am
 msgid "AM"
-msgstr "AM"
+msgstr "Mattino"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_needaction
@@ -625,7 +625,7 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__create_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__create_date
 msgid "Created on"
-msgstr "Creato il"
+msgstr "Data creazione"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove__currency_id
@@ -713,17 +713,17 @@ msgstr "E-mail"
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__recipients__last_month
 msgid "Employee who ordered last month"
-msgstr ""
+msgstr "Dipendente con ordine scorso mese"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__recipients__last_week
 msgid "Employee who ordered last week"
-msgstr ""
+msgstr "Dipendente con ordine scorsa settimana"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__recipients__last_year
 msgid "Employee who ordered last year"
-msgstr ""
+msgstr "Dipendente con ordine scorso anno"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__recipients__everyone
@@ -1152,7 +1152,7 @@ msgstr "Pranzo: ricevi pasti"
 #: model:ir.cron,cron_name:lunch.ir_cron_lunch_alerts
 #: model:ir.cron,name:lunch.ir_cron_lunch_alerts
 msgid "Lunch: alert chat notification"
-msgstr ""
+msgstr "Pranzo: notifica di avviso per chat"
 
 #. module: lunch
 #: model:ir.actions.server,name:lunch.ir_cron_lunch_ir_actions_server
@@ -1461,7 +1461,7 @@ msgstr "Scoperto"
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__notification_moment__pm
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__moment__pm
 msgid "PM"
-msgstr "PM"
+msgstr "Pomeriggio"
 
 #. module: lunch
 #: model:lunch.product.category,name:lunch.categ_pasta
@@ -1788,6 +1788,14 @@ msgid ""
 msgstr ""
 "La categoria prodotto è archiviata. L'utente deve annullare l'archiviazione "
 "della categoria o cambiare quella del prodotto."
+
+#. module: lunch
+#: code:addons/lunch/models/lunch_product.py:0
+#, python-format
+msgid ""
+"The product supplier is archived. The user have to unarchive the supplier or"
+" change the supplier of the product."
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__responsible_id

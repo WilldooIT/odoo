@@ -151,9 +151,12 @@ class Website(models.Model):
                 # don't add child menu if parent is forbidden
                 if menu.parent_id and menu.parent_id in menus:
                     menu.parent_id._cache['child_id'] += (menu.id,)
+
             # prefetch every website.page and ir.ui.view at once
             menus.mapped('is_visible')
-            website.menu_id = menus and menus.filtered(lambda m: not m.parent_id)[0].id or False
+
+            top_menus = menus.filtered(lambda m: not m.parent_id)
+            website.menu_id = top_menus and top_menus[0].id or False
 
     # self.env.uid for ir.rule groups on menu
     @tools.ormcache('self.env.uid', 'self.id')
@@ -1020,6 +1023,9 @@ class Website(models.Model):
 
     def _get_cached(self, field):
         return self._get_cached_values()[field]
+
+    def _get_relative_url(self, url):
+        return urls.url_parse(url).replace(scheme='', netloc='').to_url()
 
 
 class BaseModel(models.AbstractModel):

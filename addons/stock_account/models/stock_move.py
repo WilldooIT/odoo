@@ -19,6 +19,9 @@ class StockMove(models.Model):
     account_move_ids = fields.One2many('account.move', 'stock_move_id')
     stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'stock_move_id')
 
+    def _filter_anglo_saxon_moves(self, product):
+        return self.filtered(lambda m: m.product_id.id == product.id)
+
     def action_get_account_moves(self):
         self.ensure_one()
         action_data = self.env['ir.actions.act_window']._for_xml_id('account.action_move_journal_line')
@@ -29,10 +32,11 @@ class StockMove(models.Model):
         """ Returns the unit price to value this stock move """
         self.ensure_one()
         price_unit = self.price_unit
+        precision = self.env['decimal.precision'].precision_get('Product Price')
         # If the move is a return, use the original move's price unit.
         if self.origin_returned_move_id and self.origin_returned_move_id.sudo().stock_valuation_layer_ids:
             price_unit = self.origin_returned_move_id.sudo().stock_valuation_layer_ids[-1].unit_cost
-        return not self.company_id.currency_id.is_zero(price_unit) and price_unit or self.product_id.standard_price
+        return not float_is_zero(price_unit, precision) and price_unit or self.product_id.standard_price
 
     @api.model
     def _get_valued_types(self):

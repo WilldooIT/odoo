@@ -735,7 +735,7 @@ msgstr "April"
 #. module: project
 #: model_terms:ir.ui.view,arch_db:project.view_task_kanban
 msgid "Archive"
-msgstr "Archief"
+msgstr "Archiveren"
 
 #. module: project
 #: model_terms:ir.ui.view,arch_db:project.view_project_task_type_delete_wizard
@@ -1936,7 +1936,7 @@ msgstr "Postvak in"
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_task__planned_hours
 msgid "Initially Planned Hours"
-msgstr "Begroot aantal uren"
+msgstr "Geplande uren"
 
 #. module: project
 #: model:ir.model.fields,help:project.field_project_project__alias_id

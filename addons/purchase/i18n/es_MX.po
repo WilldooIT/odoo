@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Cécile Collart <cco@odoo.com>, 2021
+# Lucia Pacheco <lpo@odoo.com>, 2021
 # Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2021
 # 
 msgid ""
@@ -28,7 +29,7 @@ msgid ""
 "                'Purchase Order - %s' % (object.name))"
 msgstr ""
 "\n"
-"                (object.state in ('draft', 'sent') y 'Solicitud de cotización - %s' % (object.name) o\n"
+"                (object.state in ('draft', 'sent') and 'Solicitud de cotización - %s' % (object.name) or\n"
 "                'Orden de compra - %s' % (object.name))"
 
 #. module: purchase
@@ -1830,7 +1831,7 @@ msgstr "País del partner"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__payment_term_id
 msgid "Payment Terms"
-msgstr "Plazos de pago"
+msgstr "Términos de pago"
 
 #. module: purchase
 #: code:addons/purchase/models/purchase.py:0
@@ -3000,7 +3001,7 @@ msgstr "Alerta para %s"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_partner_view_purchase_buttons
 msgid "Warning on the Purchase Order"
-msgstr "Alerta en el pedido de compra"
+msgstr "Alerta en la orden de compra"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_product_supplier_inherit

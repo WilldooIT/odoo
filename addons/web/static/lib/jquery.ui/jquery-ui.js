@@ -7236,6 +7236,10 @@ $.widget( "ui.autocomplete", {
 		this._addClass( "ui-autocomplete-input" );
 		this.element.attr( "autocomplete", "off" );
 
+		// Additional delay for selecting autocomplete
+		this.options.delaySelect = 100;
+		var self = this;
+
 		this._on( this.element, {
 			keydown: function( event ) {
 				if ( this.element.prop( "readOnly" ) ) {
@@ -7267,21 +7271,26 @@ $.widget( "ui.autocomplete", {
 					this._keyEvent( "next", event );
 					break;
 				case keyCode.ENTER:
+					// Delay autocomplete selection
+					this._delay( function() {
+						// when menu is open and has focus
+						if ( self.menu.active ) {
 
-					// when menu is open and has focus
-					if ( this.menu.active ) {
-
-						// #6055 - Opera still allows the keypress to occur
-						// which causes forms to submit
-						suppressKeyPress = true;
-						event.preventDefault();
-						this.menu.select( event );
-					}
+							// #6055 - Opera still allows the keypress to occur
+							// which causes forms to submit
+							suppressKeyPress = true;
+							event.preventDefault();
+							self.menu.select( event );
+						}
+					}, self.options.delay + self.options.delaySelect);
 					break;
 				case keyCode.TAB:
-					if ( this.menu.active ) {
-						this.menu.select( event );
-					}
+					// Delay autocomplete selection
+					this._delay( function() {
+						if ( self.menu.active ) {
+							self.menu.select( event );
+						}
+					}, self.options.delay + self.options.delaySelect);
 					break;
 				case keyCode.ESCAPE:
 					if ( this.menu.element.is( ":visible" ) ) {

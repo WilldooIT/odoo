@@ -7237,7 +7237,7 @@ $.widget( "ui.autocomplete", {
 		this.element.attr( "autocomplete", "off" );
 
 		// Additional delay for selecting autocomplete
-		this.options.delaySelect = 100;
+		this.options.delaySelect = 300;
 		var self = this;
 
 		this._on( this.element, {

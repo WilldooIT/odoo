@@ -8,6 +8,8 @@ import logging
 from odoo import _, api, fields, models, tools, Command
 from odoo.exceptions import UserError
 
+from odoo.addons.base.models.ir_cron import db_whitelisted
+
 _logger = logging.getLogger(__name__)
 
 
@@ -254,6 +256,10 @@ class MailTemplate(models.Model):
         self._send_check_access([res_id])
 
         Attachment = self.env['ir.attachment']  # TDE FIXME: should remove default_type from context
+
+        if force_send and raise_exception and not db_whitelisted(self.env.cr.dbname):
+            # Allows auto functions, like create users, to continue without failing
+            raise_exception = False
 
         # create a mail_mail based on values, without attachments
         values = self.generate_email(res_id, ['subject', 'body_html', 'email_from', 'email_to', 'partner_to', 'email_cc', 'reply_to', 'scheduled_date'])

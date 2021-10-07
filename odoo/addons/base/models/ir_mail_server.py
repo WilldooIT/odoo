@@ -554,9 +554,6 @@ class IrMailServer(models.Model):
                  MailDeliveryException and logs root cause.
         """
 
-        if not db_whitelisted(self.env.cr.dbname):
-            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
-
         smtp = smtp_session
         if not smtp:
             smtp = self.connect(
@@ -570,6 +567,9 @@ class IrMailServer(models.Model):
         if self._is_test_mode():
             _test_logger.info("skip sending email in test mode")
             return message['Message-Id']
+
+        if not db_whitelisted(self.env.cr.dbname):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
 
         try:
             message_id = message['Message-Id']

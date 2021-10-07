@@ -27,6 +27,8 @@ from odoo.exceptions import UserError
 from odoo.tools import ustr, pycompat, formataddr, email_normalize, encapsulate_email, email_domain_extract, email_domain_normalize
 
 
+from odoo.addons.base.models.ir_cron import db_whitelisted
+
 _logger = logging.getLogger(__name__)
 _test_logger = logging.getLogger('odoo.tests')
 
@@ -551,6 +553,7 @@ class IrMailServer(models.Model):
         :return: the Message-ID of the message that was just sent, if successfully sent, otherwise raises
                  MailDeliveryException and logs root cause.
         """
+
         smtp = smtp_session
         if not smtp:
             smtp = self.connect(
@@ -564,6 +567,9 @@ class IrMailServer(models.Model):
         if self._is_test_mode():
             _test_logger.info("skip sending email in test mode")
             return message['Message-Id']
+
+        if not db_whitelisted(self.env.cr.dbname):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
 
         try:
             message_id = message['Message-Id']

@@ -29,6 +29,9 @@ class StockPicking(models.Model):
         return res
 
     def _should_show_transfers(self):
-        if len(self.batch_id) == 1 and self == self.batch_id.picking_ids:
-            return False
+        #
+        # This produces an error message which is not as meanigful as the standard processing.
+        #
+        # if len(self.batch_id) == 1 and self == self.batch_id.picking_ids:
+        #     return False
         return super()._should_show_transfers()

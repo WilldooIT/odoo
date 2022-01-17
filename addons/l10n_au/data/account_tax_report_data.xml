@@ -84,10 +84,11 @@
 
     <record id="account_tax_report_gstrpt_g9" model="account.tax.report.line">
         <field name="name">G9: GST on sales (G8 divided by eleven)</field>
+        <field name="code">G9</field>
         <field name="report_id" ref="tax_report"/>
         <field name="sequence" eval="10"/>
         <field name="formula">((G1-(G2+G3+G4))+G7)/11</field>
-        <field name="parent_id" eval="False"/>
+        <field name="parent_id" eval="account_tax_report_gstrpt_sale_total"/>
     </record>
 
     <!-- Purchase Report -->
@@ -198,29 +199,68 @@
         <field name="code">ONLY</field>
         <field name="report_id" ref="tax_report"/>
         <field name="sequence" eval="113"/>
-        <field name="parent_id" ref="account_tax_report_gstrpt_g20a"/>
+        <field name="parent_id" ref="account_tax_report_gstrpt_purchase_total"/>
     </record>
 
     <record id="account_tax_report_gstrpt_g20b" model="account.tax.report.line">
         <field name="name">G20: GST on purchases</field>
         <field name="formula">(((G10+G11)-(G13+G14+G15)+G18)/11)+ONLY</field>
+        <field name="code">G20</field>
         <field name="report_id" ref="tax_report"/>
         <field name="sequence" eval="114"/>
+        <field name="parent_id" ref="account_tax_report_gstrpt_purchase_total"/>
     </record>
+
+
+    <!-- Summary -->
+    <record id="account_tax_report_gstrpt_summary" model="account.tax.report.line">
+        <field name="name">Summary</field>
+        <field name="report_id" ref="tax_report"/>
+        <field name="sequence" eval="201"/>
+        <field name="formula">None</field>
+    </record>
+
+    <record id="account_tax_report_gstrpt_summary_1a" model="account.tax.report.line">
+        <field name="name">1A: GST on sales</field>
+        <field name="code">1A</field>
+        <field name="report_id" ref="tax_report"/>
+        <field name="sequence" eval="201"/>
+        <field name="formula">G9</field>
+        <field name="parent_id" eval="account_tax_report_gstrpt_summary"/>
+    </record>
+
+    <record id="account_tax_report_gstrpt_summary_1b" model="account.tax.report.line">
+        <field name="name">1B: GST on purchases</field>
+        <field name="code">1B</field>
+        <field name="report_id" ref="tax_report"/>
+        <field name="sequence" eval="202"/>
+        <field name="formula">G20</field>
+        <field name="parent_id" eval="account_tax_report_gstrpt_summary"/>
+    </record>
+
+    <record id="account_tax_report_gstrpt_summary_9" model="account.tax.report.line">
+        <field name="name">9: Your payment</field>
+        <field name="report_id" ref="tax_report"/>
+        <field name="sequence" eval="203"/>
+        <field name="formula">1A-1B</field>
+        <field name="parent_id" eval="account_tax_report_gstrpt_summary"/>
+    </record>
+
 
     <!-- Comparison -->
     <record id="account_tax_report_gstrpt_comparison" model="account.tax.report.line">
         <field name="name">Comparison</field>
-        <field name="tag_name">Comparison</field>
+        <field name="tag_name" eval="False"/>
         <field name="report_id" ref="tax_report"/>
-        <field name="sequence" eval="201"/>
+        <field name="sequence" eval="301"/>
+        <field name="parent_id" eval="False"/>
     </record>
 
     <record id="account_tax_report_gstrpt_comparison_worksheet" model="account.tax.report.line">
         <field name="name">GST from worksheet (G20-G9)</field>
         <field name="formula">((((G10+G11)-(G13+G14+G15)+G18)/11)+ONLY)-(((G1-(G2+G3+G4))+G7)/11)</field>
         <field name="report_id" ref="tax_report"/>
-        <field name="sequence" eval="202"/>
+        <field name="sequence" eval="302"/>
         <field name="parent_id" ref="account_tax_report_gstrpt_comparison"/>
     </record>
 
@@ -228,7 +268,7 @@
         <field name="name">GST from General Ledger</field>
         <field name="tag_name">GST from General Ledger</field>
         <field name="report_id" ref="tax_report"/>
-        <field name="sequence" eval="203"/>
+        <field name="sequence" eval="303"/>
         <field name="parent_id" ref="account_tax_report_gstrpt_comparison"/>
     </record>
 

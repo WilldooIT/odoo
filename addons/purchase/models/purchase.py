@@ -192,7 +192,7 @@ class PurchaseOrder(models.Model):
     def write(self, vals):
         res = super(PurchaseOrder, self).write(vals)
         if vals.get('date_planned'):
-            self.order_line.write({'date_planned': vals['date_planned']})
+            self.mapped('order_line').write({'date_planned': vals['date_planned']})
         return res
 
     @api.multi

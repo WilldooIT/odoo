@@ -1020,7 +1020,6 @@ return AbstractRenderer.extend({
         if (activeElement.length === 0) {
             return;
         }
-        debugger;
         const domain = this.chart.data.datasets[activeElement[0]._datasetIndex].domain;
         if (!domain) {
             return; // empty dataset

@@ -200,4 +200,7 @@ ActionManager.include({
         return reportUrls;
     },
 });
+
+return ActionManager;
+
 });

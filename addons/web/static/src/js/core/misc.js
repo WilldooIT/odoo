@@ -148,6 +148,21 @@ function Reload(parent, action) {
     var search = '?' + $.param(sobj);
 
     var hash = l.hash;
+    if ('return_to_record' in params) {
+
+        const parsedHash = new URLSearchParams(
+            hash.substring(1) // skip the first char (#)
+        );
+        if (parsedHash.get('id')) {
+            var newid = '';
+            if (!! params.return_to_record) {
+                newid = params.return_to_record.toString()
+            }
+            hash=hash.replace('id='+parsedHash.get('id'),'id='+newid)
+        }
+    }
+
+
     if (menu_id) {
         hash = "#menu_id=" + menu_id;
     }

@@ -22,6 +22,8 @@ from werkzeug.exceptions import (
 from werkzeug.security import safe_join
 from werkzeug.urls import url_encode  # TODO: use urllib
 
+import json
+
 # TODO: drop the fallback
 try:
     from werkzeug.middleware.proxy_fix import ProxyFix as ProxyFix_
@@ -91,6 +93,26 @@ def db_filter(dbs: Iterable[str], host: str | None = None) -> list[str]:
     :returns: The original list filtered.
     :rtype: List[str]
     """
+
+    if config.get('db_filter_multi'):
+        host_m = host
+
+        if host_m is None:
+            host_m = request.httprequest.environ.get('HTTP_HOST', '')
+        host_m = host_m.partition(':')[0]
+        if host_m.startswith('www.'):
+            host_m = host_m[4:]
+        domain = host_m.partition('.')[0]
+
+        db_dict = json.loads(config["db_filter_multi"])
+        if isinstance(db_dict, dict) and host_m in db_dict:
+            ndbs = []
+            for dbfilter in db_dict[host_m]:
+                dbfilter_re = re.compile(
+                    dbfilter.replace("%h", re.escape(host_m))
+                    .replace("%d", re.escape(domain)))
+                ndbs.extend([db for db in dbs if dbfilter_re.match(db)])
+            return sorted(list(set(ndbs)))
 
     if config['dbfilter']:
         #        host

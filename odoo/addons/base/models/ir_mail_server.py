@@ -20,10 +20,13 @@ from OpenSSL import crypto as SSLCrypto
 from OpenSSL.crypto import Error as SSLCryptoError, FILETYPE_PEM
 from OpenSSL.SSL import Error as SSLError
 from urllib3.contrib.pyopenssl import PyOpenSSLContext
+from unittest.mock import MagicMock
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
 from odoo.tools import ustr, pycompat, formataddr, email_normalize, encapsulate_email, email_domain_extract, email_domain_normalize
+
+from odoo.addons.base.models.ir_cron import db_whitelisted
 
 
 _logger = logging.getLogger(__name__)
@@ -675,6 +678,14 @@ class IrMailServer(models.Model):
         if self._is_test_mode():
             _test_logger.info("skip sending email in test mode")
             return message['Message-Id']
+
+        # Some odoo tests in base explicitly patch ir.mail_server to return False from _is_test_mode()
+        if (
+            not db_whitelisted(self.env.cr.dbname)
+            and not isinstance(self.connect, MagicMock)
+            and smtp.__class__.__name__ != "FakeSMTP"
+        ):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
 
         try:
             message_id = message['Message-Id']

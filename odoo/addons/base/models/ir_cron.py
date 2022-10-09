@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from psycopg2 import sql
 
+import json
+import re
+
 import odoo
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -21,6 +24,16 @@ MAX_FAIL_TIME = timedelta(hours=5)  # chosen with a fair roll of the dice
 # custom function to call instead of default PostgreSQL's `pg_notify`
 ODOO_NOTIFY_FUNCTION = os.getenv('ODOO_NOTIFY_FUNCTION', 'pg_notify')
 
+
+def db_whitelisted(db_name):
+    cron_whitelist = odoo.tools.config.get("db_cron_whitelist") and json.loads(odoo.tools.config["db_cron_whitelist"]) or []
+    if db_name not in cron_whitelist:
+        for cw_name in cron_whitelist:
+            if re.match(cw_name, db_name):
+                break
+        else:
+            return False
+    return True
 
 class BadVersion(Exception):
     pass
@@ -112,6 +125,10 @@ class ir_cron(models.Model):
 
     @classmethod
     def _process_jobs(cls, db_name):
+
+        if not db_whitelisted(db_name):
+            return False
+
         """ Execute every job ready to be run on this database. """
         try:
             db = odoo.sql_db.db_connect(db_name)

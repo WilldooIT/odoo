@@ -30,6 +30,9 @@ except ImportError:
     # urllib3 1.25 and below
     from urllib3.packages.ssl_match_hostname import CertificateError, match_hostname
 
+from odoo.addons.base.models.ir_cron import db_whitelisted
+from unittest.mock import MagicMock
+
 _logger = logging.getLogger(__name__)
 _test_logger = logging.getLogger('odoo.tests')
 
@@ -816,6 +819,14 @@ class IrMail_Server(models.Model):
         if self._disable_send():
             _test_logger.debug("skip sending email in test mode")
             return message['Message-Id']
+
+        # Some odoo tests in base explicitly patch ir.mail_server to return False from _is_test_mode()
+        if (
+            not db_whitelisted(self.env.cr.dbname)
+            and not isinstance(self.connect, MagicMock)
+            and smtp.__class__.__name__ != "FakeSMTP"
+        ):
+            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
 
         try:
             message_id = message['Message-Id']

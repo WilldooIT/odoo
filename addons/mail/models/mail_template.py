@@ -11,6 +11,8 @@ from odoo.fields import Domain
 from odoo.tools import is_html_empty
 from odoo.tools.safe_eval import safe_eval, time
 
+from odoo.addons.base.models.ir_cron import db_whitelisted
+
 _logger = logging.getLogger(__name__)
 
 
@@ -661,6 +663,11 @@ class MailTemplate(models.Model):
 
         # Grant access to send_mail only if access to related document
         self.ensure_one()
+
+        if force_send and raise_exception and not db_whitelisted(self.env.cr.dbname):
+            # Allows auto functions, like create users, to continue without failing
+            raise_exception = False
+
         return self.send_mail_batch(
             [res_id],
             force_send=force_send,

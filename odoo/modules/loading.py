@@ -298,6 +298,18 @@ def load_module_graph(cr, graph, status=None, perform_checks=True,
                 env = api.Environment(cr, SUPERUSER_ID, {})
                 module = env['ir.module.module'].browse(module_id)
 
+            # If this module has pre-install tests, but that module is already installed,
+            # then we have either a circular reference, or need a load_priority in the
+            # manifest
+
+            preinstalls = loader.find_pre_install_tests(module_name)
+            loaded_modules = (sorted(registry._init_modules))
+            if any(n in loaded_modules for n in preinstalls):
+                _logger.error(
+                    "Module %s: Preinstall test not run as module already installed",
+                    module_name
+                )
+
         if needs_update:
             processed_modules.append(package.name)
 

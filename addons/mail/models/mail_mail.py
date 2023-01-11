@@ -19,6 +19,7 @@ from odoo.addons.mail.tools.attachment import extract_attachment_ids_from_html
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.modules.registry import Registry
+from odoo.addons.base.models.ir_cron import db_whitelisted
 
 _logger = logging.getLogger(__name__)
 _UNFOLLOW_REGEX = re.compile(r'<span\s*(t-if="show_unfollow")?\s*id="mail_unfollow".*?<\/span>', re.DOTALL)
@@ -741,6 +742,12 @@ class MailMail(models.Model):
                 are possible
             :return: True
         """
+
+        # Return out of send() if db not in whitelist
+        if not db_whitelisted(self.env.cr.dbname):
+            _logger.warning('Database cannot send emails as it is not on the whitelist.')
+            return
+
         for mail_server_id, alias_domain_id, smtp_from, batch_ids in self._split_by_mail_configuration():
             mail_server = self.env["ir.mail_server"].browse(mail_server_id)
 

@@ -176,6 +176,33 @@ def load_module_graph(cr, graph, status=None, perform_checks=True,
                 env = api.Environment(cr, SUPERUSER_ID, {})
                 env['base'].flush()
 
+        # Before Loading, check if any other modules have a "pre-install" test to be run
+        loader = odoo.tests.loader
+        updating = tools.config.options['init'] or tools.config.options['update']
+        test_results = None
+        if tools.config.options['test_enable'] and (needs_update or not updating):
+            env = api.Environment(cr, SUPERUSER_ID, {})
+
+            module_names = (sorted(registry._init_modules))
+            for test_module_name in module_names:
+                preinstalls = loader.find_pre_install_tests(test_module_name)
+                if module_name in preinstalls:
+                    _logger.info("Starting pre install tests")
+                    tests_before = registry._assertion_report.testsRun
+                    tests_t0, tests_q0 = time.time(), odoo.sql_db.sql_counter
+                    with odoo.api.Environment.manage():
+                        result = loader.run_suite(loader.make_suite(test_module_name, 'pre_install_%s' % module_name), test_module_name)
+                        registry._assertion_report.update(result)
+                    _logger.info(
+                        "%d pre-install-tests in %.2fs, %s queries",
+                        registry._assertion_report.testsRun - tests_before,
+                        time.time() - tests_t0,
+                        odoo.sql_db.sql_counter - tests_q0)
+
+                    # tests may have reset the environment
+                    env = api.Environment(cr, SUPERUSER_ID, {})
+        # End of pre-install tests
+
         load_openerp_module(package.name)
 
         new_install = package.state == 'to install'

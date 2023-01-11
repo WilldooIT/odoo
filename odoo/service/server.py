@@ -1221,8 +1221,17 @@ def preload_registries(dbnames):
                 _logger.info("Starting post tests")
                 tests_before = registry._assertion_report.testsRun
                 with odoo.api.Environment.manage():
+                    # Run pre_install tests which were missed because the module was never installed
+                    for module_name in module_names:
+                        preinstalls = loader.find_pre_install_tests(module_name)
+                        for preinstall in preinstalls:
+                            if preinstall not in module_names:
+                                result = loader.run_suite(loader.make_suite([module_name], 'pre_install_%s' % preinstall), module_name)
+                                registry._assertion_report.update(result)
+
                     result = loader.run_suite(loader.make_suite(module_names, 'post_install'))
                     registry._assertion_report.update(result)
+
                 _logger.info("%d post-tests in %.2fs, %s queries",
                              registry._assertion_report.testsRun - tests_before,
                              time.time() - t0,

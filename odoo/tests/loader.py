@@ -70,6 +70,19 @@ def make_suite(module_names, position='at_install'):
     return OdooSuite(sorted(tests, key=lambda t: t.test_sequence))
 
 
+def find_pre_install_tests(module_name):
+    mods = get_test_modules(module_name)
+    pre_installs = set()
+    for mod in mods:
+        for test in unwrap_suite(unittest.TestLoader().loadTestsFromModule(mod)):
+            for tag in test.test_tags if hasattr(test, 'test_tags') else []:
+                if tag.startswith('+'):
+                    tag = tag.replace('+', '')
+                if tag.startswith('pre_install_'):
+                    pre_installs.add(tag.replace('pre_install_', ''))
+    return pre_installs
+
+
 def run_suite(suite, module_name=None):
     # avoid dependency hell
     from ..modules import module

@@ -1277,6 +1277,15 @@ def preload_registries(dbnames):
                 module_names = (registry.updated_modules if update_module else
                                 sorted(registry._init_modules))
                 _logger.info("Starting post tests")
+
+                # Run pre_install tests which were missed because the module was never installed
+                for module_name in module_names:
+                    preinstalls = loader.find_pre_install_tests(module_name)
+                    for preinstall in preinstalls:
+                        if preinstall not in module_names:
+                            result = loader.run_suite(loader.make_suite(module_name, 'pre_install_%s' % preinstall), module_name)
+                            registry._assertion_report.update(result)
+
                 tests_before = registry._assertion_report.testsRun
                 result = loader.run_suite(loader.make_suite(module_names, 'post_install'))
                 registry._assertion_report.update(result)

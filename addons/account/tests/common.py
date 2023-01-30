@@ -24,7 +24,10 @@ class AccountTestInvoicingCommon(SavepointCase):
     def setUpClass(cls, chart_template_ref=None):
         super(AccountTestInvoicingCommon, cls).setUpClass()
 
-        assert 'post_install' in cls.test_tags, 'This test requires a CoA to be installed, it should be tagged "post_install"'
+        assert (
+            'post_install' in cls.test_tags
+            or any([t.startswith("pre_install_") for t in cls.test_tags])
+        ), 'This test requires a CoA to be installed, it should be tagged "post_install" or "pre_install_MODULE_NAME"'
 
         if chart_template_ref:
             chart_template = cls.env.ref(chart_template_ref)

@@ -14,7 +14,7 @@ from odoo import _, api, fields, models
 from odoo import tools
 from odoo.addons.base.ir.ir_mail_server import MailDeliveryException
 from odoo.tools.safe_eval import safe_eval
-from odoo.addons.base.models.ir_cron import db_whitelisted
+from odoo.addons.base.ir.ir_cron import db_whitelisted
 
 
 _logger = logging.getLogger(__name__)

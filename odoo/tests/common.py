@@ -2610,8 +2610,9 @@ def tagged(*tags):
         obj.test_tags = (getattr(obj, 'test_tags', set()) | include) - exclude # todo remove getattr in master since we want to limmit tagged to BaseCase and always have +standard tag
         at_install = 'at_install' in obj.test_tags
         post_install = 'post_install' in obj.test_tags
-        if not (at_install ^ post_install):
-            _logger.warning('A tests should be either at_install or post_install, which is not the case of %r', obj)
+        pre_install = any([t.startswith("pre_install_") for t in obj.test_tags])
+        if not (at_install ^ post_install) and not pre_install:
+            _logger.warning('A tests should be either at_install or post_install, or pre_install_MODULE, which is not the case of %r', obj)
         return obj
     return tags_decorator
 

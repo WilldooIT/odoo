@@ -6,6 +6,10 @@ from odoo.tests.common import TransactionCase, HttpCase, tagged, Form
 import time
 import base64
 from lxml import etree
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 @tagged('post_install', '-at_install')
 class AccountTestInvoicingCommon(TransactionCase):
@@ -34,7 +38,17 @@ class AccountTestInvoicingCommon(TransactionCase):
             chart_template = cls.env.ref(chart_template_ref)
         else:
             chart_template = cls.env.ref('l10n_generic_coa.configurable_chart_template', raise_if_not_found=False)
+            if not chart_template:
+                chart_template = cls.env['account.chart.template'].search([], limit=1)
+                if chart_template:
+                    _logger.info(
+                        "Generic CoA not found - Using %s" % chart_template.name
+                    )
         if not chart_template:
+            _logger.warning(
+                "Accounting Tests skipped - %s" %
+                (chart_template_ref and ('CoA "%s" not found' % chart_template_ref) or 'No template found.',)
+            )
             cls.tearDownClass()
             # skipTest raises exception
             cls.skipTest(cls, "Accounting Tests skipped because the user's company has no chart of accounts.")

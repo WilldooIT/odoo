@@ -14,6 +14,7 @@ import smtplib
 import ssl
 import sys
 import threading
+import os
 
 from socket import gaierror, timeout
 from OpenSSL import crypto as SSLCrypto
@@ -37,6 +38,10 @@ SMTP_TIMEOUT = 60
 
 class MailDeliveryException(Exception):
     """Specific exception subclass for mail delivery errors"""
+
+
+class MailDeliveryWhitelistException(MailDeliveryException):
+    """Specific exception subclass for non whitelisted mail delivery attempts"""
 
 
 # Python 3: patch SMTP's internal printer/debugger
@@ -383,6 +388,8 @@ class IrMailServer(models.Model):
                  _("Please define at least one SMTP server, "
                    "or provide the SMTP parameters explicitly.")))
 
+        self._is_allowed_to_send(smtp_server, raise_exception=True)
+
         if smtp_encryption == 'ssl':
             if 'SMTP_SSL' not in smtplib.__all__:
                 raise UserError(
@@ -679,14 +686,6 @@ class IrMailServer(models.Model):
             _test_logger.info("skip sending email in test mode")
             return message['Message-Id']
 
-        # Some odoo tests in base explicitly patch ir.mail_server to return False from _is_test_mode()
-        if (
-            not db_whitelisted(self.env.cr.dbname)
-            and not isinstance(self.connect, MagicMock)
-            and smtp.__class__.__name__ != "FakeSMTP"
-        ):
-            raise UserError(_("Whitelist Error") + "\n" + _("Database cannot send emails as it is not on the whitelist."))
-
         try:
             message_id = message['Message-Id']
 
@@ -709,6 +708,8 @@ class IrMailServer(models.Model):
             if not smtp_session:
                 smtp.quit()
         except smtplib.SMTPServerDisconnected:
+            raise
+        except MailDeliveryWhitelistException:
             raise
         except Exception as e:
             params = (ustr(smtp_server), e.__class__.__name__, ustr(e))
@@ -814,3 +815,45 @@ class IrMailServer(models.Model):
         outgoing mail server.
         """
         return getattr(threading.current_thread(), 'testing', False) or self.env.registry.in_test_mode()
+
+    def _is_allowed_to_send(self, smtp_server: str = None, raise_exception: bool = False) -> bool:
+        """
+        Return True if the database is allowed to send email.
+
+        Emails are not allowed unless the database is whitelisted by using the
+        `db_cron_whitelist` option in the odoo config file.
+
+        During development, we don't want to enable this option, and we do not want
+        to send emails to real users, but we do want to test emails using local
+        development mail servers such as MailHog.
+
+        To avoid accidentally allowing real local email servers such as postfix
+        to send emails, the mail server must be explicitly configured with the
+        environment variable `ODOO_DEV_SMTP_SERVER` if the database is not
+        whitelisted.
+        """
+
+        if db_whitelisted(self.env.cr.dbname):
+            return True
+
+        # Some odoo tests in base explicitly patch ir.mail_server to return False from
+        # _is_test_mode() in which case we want to allow sending mails.
+        if isinstance(self.connect, MagicMock):
+            return True
+
+        dev_smtp_server = os.environ.get("ODOO_DEV_SMTP_SERVER")
+        if dev_smtp_server in ["localhost", "127.0.0.1"] and (
+            (smtp_server and smtp_server == dev_smtp_server)
+            or
+            (len(self) <= 1 and self.smtp_host == dev_smtp_server)
+        ):
+            _logger.info("Allowing local development SMTP server: %s", smtp_server)
+            return True
+
+        msg = _("Database cannot send emails as it is not on the whitelist.")
+        _logger.warning(msg)
+
+        if raise_exception:
+            raise MailDeliveryWhitelistException(msg)
+
+        return False

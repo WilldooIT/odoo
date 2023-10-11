@@ -15,7 +15,7 @@ from datetime import timedelta
 from dateutil.parser import parse
 
 from odoo import _, api, fields, models, modules, SUPERUSER_ID, tools
-from odoo.addons.base.models.ir_mail_server import MailDeliveryException
+from odoo.addons.base.models.ir_mail_server import MailDeliveryException, MailDeliveryWhitelistException
 from odoo.exceptions import UserError, ValidationError
 from odoo.modules.registry import Registry
 from odoo.addons.base.models.ir_cron import db_whitelisted
@@ -724,6 +724,8 @@ class MailMail(models.Model):
             smtp_session = None
             try:
                 smtp_session = self.env['ir.mail_server']._connect__(mail_server_id=mail_server_id, smtp_from=smtp_from)
+            except MailDeliveryWhitelistException:
+                pass
             except Exception as exc:
                 if raise_exception:
                     # To be consistent and backward compatible with mail_mail.send() raised

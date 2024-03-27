@@ -133,7 +133,7 @@ class Graph(dict):
 
         for package in later:
             unmet_deps = [p for p in dependencies[package] if p not in self]
-            _logger.info('module %s: Unmet dependencies: %s', package, ', '.join(unmet_deps))
+            _logger.warning('module %s: Unmet dependencies: %s', package, ', '.join(unmet_deps))
 
         return len(self) - len_graph
 

@@ -22,6 +22,7 @@ from OpenSSL.crypto import Error as SSLCryptoError, FILETYPE_PEM
 from OpenSSL.SSL import Error as SSLError
 from urllib3.contrib.pyopenssl import PyOpenSSLContext
 from OpenSSL.SSL import Context as SSLContext, Error as SSLError
+from unittest.mock import MagicMock
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError

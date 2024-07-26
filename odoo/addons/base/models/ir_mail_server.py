@@ -24,6 +24,7 @@ from OpenSSL.crypto import Error as SSLCryptoError
 from OpenSSL.SSL import Error as SSLError
 from urllib3.contrib.pyopenssl import PyOpenSSLContext
 from OpenSSL.SSL import Context as SSLContext, Error as SSLError
+from unittest.mock import MagicMock
 
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError

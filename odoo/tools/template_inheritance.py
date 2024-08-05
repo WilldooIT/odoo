@@ -239,7 +239,7 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                     unknown = [
                         key
                         for key in child.attrib
-                        if key not in ('name', 'add', 'remove', 'separator')
+                        if key not in ('name', 'add', 'remove', 'separator', 'add_to_dict')
                         and not key.startswith('data-oe-')
                     ]
                     if unknown:
@@ -252,6 +252,8 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                     value = None
 
                     if child.get('add') or child.get('remove'):
+                        if child.get('add_to_dict'):
+                            raise ValueError(_('Cannot add to dictionary using add or remove'))
                         if child.text:
                             raise ValueError(_lt(
                                 "Element <attribute> with 'add' or 'remove' cannot contain text %s",
@@ -300,6 +302,12 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                                 (v for v in values if v and v not in to_remove),
                                 to_add
                             ))
+                    elif child.get('add_to_dict'):
+                        value = node.get(attribute, '{}').strip(' \n')
+                        if not value.startswith('{') or not value.endswith('}'):
+                            raise ValueError(_(f'Cannot add to value which is not dictionary {value}'))
+                        value = value.strip(' {},\n')
+                        value = '{%s%s}' % (value + ', ' if value else '', child.get('add_to_dict'))
                     else:
                         value = child.text or ''
 

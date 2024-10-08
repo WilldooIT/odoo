@@ -184,12 +184,12 @@ def load_module_graph(env, graph, status=None, perform_checks=True,
                 env.flush_all()
 
         # Before Loading, check if any other modules have a "pre-install" test to be run
-        loader = odoo.tests.loader
         updating = tools.config.options['init'] or tools.config.options['update']
         test_results = None
         if tools.config.options['test_enable'] and (needs_update or not updating):
             module_names = (sorted(registry._init_modules))
             for test_module_name in module_names:
+                from odoo.tests import loader  # noqa: PLC0415
                 preinstalls = loader.find_pre_install_tests(test_module_name)
                 if module_name in preinstalls:
                     _logger.info("Starting pre install tests")

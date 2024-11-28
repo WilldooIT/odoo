@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
 
 import json
-import re
+from functools import lru_cache
 
 import odoo
 from odoo import api, fields, models, sql_db
@@ -40,14 +40,16 @@ MIN_DELTA_BEFORE_DEACTIVATION = timedelta(days=7)
 ODOO_NOTIFY_FUNCTION = os.getenv('ODOO_NOTIFY_FUNCTION', 'pg_notify')
 
 
+@lru_cache(maxsize=64)
 def db_whitelisted(db_name):
-    cron_whitelist = odoo.tools.config.get("db_cron_whitelist") and json.loads(odoo.tools.config["db_cron_whitelist"]) or []
+    cron_whitelist = odoo.tools.config.get("db_cron_whitelist") or []
+
+    # temporary code only until runbot is changed to pass unquoted db names
+    if len(cron_whitelist) == 1 and type(first_element := json.loads(cron_whitelist[0])) == list:
+        cron_whitelist = first_element
+
     if db_name not in cron_whitelist:
-        for cw_name in cron_whitelist:
-            if re.match(cw_name, db_name):
-                break
-        else:
-            return False
+        return False
     return True
 
 class BadVersion(Exception):

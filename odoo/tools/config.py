@@ -391,6 +391,8 @@ class configmanager:
                          help="specify the maximum number of physical connections to PostgreSQL specifically for the gevent worker")
         group.add_option("--db-template", dest="db_template", my_default="template0", env_name='PGDATABASE_TEMPLATE',
                          help="specify a custom database template to create a new database")
+        group.add_option("--db-cron-whitelist", dest="db_cron_whitelist", type='comma', my_default=[],
+                         help="specify databases which are whitelisted for running crons and sending emails")
         parser.add_option_group(group)
 
         # i18n Group

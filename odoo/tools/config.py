@@ -430,6 +430,10 @@ class configmanager:
                          help="specify a custom database template to create a new database")
         group.add_option("--db-system", dest="db_system", my_default="postgres", env_name='PGDATABASE_SYSTEM',
                          help="specify the database for shared system operations like bus and maintenance")
+
+        group.add_option("--db-cron-whitelist", dest="db_cron_whitelist", type='comma', my_default=[],
+                         help="specify databases which are whitelisted for running crons and sending emails")
+
         parser.add_option_group(group)
 
         # i18n Group

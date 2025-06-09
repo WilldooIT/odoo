@@ -96,9 +96,14 @@ export const viewService = {
             if (env.isSmall) {
                 loadViewsOptions.mobile = true;
             }
+            // const filteredContext = Object.fromEntries(
+            //     Object.entries(context || {}).filter(
+            //         ([k, v]) => k == "lang" || k.endsWith("_view_ref")
+            //     )
+            // );
             const filteredContext = Object.fromEntries(
                 Object.entries(context || {}).filter(
-                    ([k, v]) => k == "lang" || k.endsWith("_view_ref")
+                    ([k, v]) => k == "lang" || k.endsWith("_view_ref") || k == "orchestrate_model"
                 )
             );
 

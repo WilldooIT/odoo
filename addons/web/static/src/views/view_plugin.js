@@ -96,8 +96,13 @@ export class ViewPlugin extends Plugin {
         if (this.#debugMode.isActive()) {
             loadViewsOptions.debug = true;
         }
+        // const filteredContext = Object.fromEntries(
+        //     Object.entries(context || {}).filter(([k, v]) => k == "lang" || k.endsWith("_view_ref"))
+        // );
         const filteredContext = Object.fromEntries(
-            Object.entries(context || {}).filter(([k, v]) => k == "lang" || k.endsWith("_view_ref"))
+            Object.entries(context || {}).filter(
+                ([k, v]) => k == "lang" || k.endsWith("_view_ref") || k == "orchestrate_model"
+            )
         );
 
         const result = await this.#orm.cache({ type: "disk" }).call(resModel, "get_views", [], {

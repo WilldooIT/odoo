@@ -94,10 +94,22 @@ export const viewService = {
             //         ([k, v]) => k == "lang" || k.endsWith("_view_ref")
             //     )
             // );
+            //
+            // If we have a view_context, we keep any keys listed in it.
             const filteredContext = Object.fromEntries(
-                Object.entries(context || {}).filter(
-                    ([k, v]) => k == "lang" || k.endsWith("_view_ref") || k == "orchestrate_model"
-                )
+                Object.entries(context || {}).filter(([k, v]) => {
+                    // Always keep these keys
+                    if (k === "lang" || k.endsWith("_view_ref")) {
+                        return true;
+                    }
+
+                    // Dynamically keep keys listed in context.view_context (if it's a list)
+                    if (Array.isArray(context?.view_context) && context.view_context.includes(k)) {
+                        return true;
+                    }
+
+                    return false;
+                })
             );
 
             const result = await orm.cache({ type: "disk" }).call(resModel, "get_views", [], {

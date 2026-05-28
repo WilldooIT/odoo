@@ -11,7 +11,6 @@ import ssl
 from email.message import EmailMessage
 from email.parser import BytesParser
 from email.utils import make_msgid
-import threading
 import os
 
 from socket import gaierror, timeout
@@ -1004,14 +1003,6 @@ class IrMail_Server(models.Model):
             self.smtp_port = 25
         return result
 
-    def _is_test_mode(self):
-        """Return True if we are running the tests, so we do not send real emails.
-
-        Can be overridden in tests after mocking the SMTP lib to test in depth the
-        outgoing mail server.
-        """
-        return getattr(threading.current_thread(), 'testing', False) or self.env.registry.in_test_mode()
-
     def _is_allowed_to_send(self, smtp_server: str = None, raise_exception: bool = False) -> bool:
         """
         Return True if the database is allowed to send email.
@@ -1034,7 +1025,7 @@ class IrMail_Server(models.Model):
 
         # Some odoo tests in base explicitly patch ir.mail_server to return False from
         # _is_test_mode() in which case we want to allow sending mails.
-        if isinstance(self.connect, MagicMock):
+        if isinstance(self._connect__, MagicMock):
             return True
 
         dev_smtp_server = os.environ.get("ODOO_DEV_SMTP_SERVER")

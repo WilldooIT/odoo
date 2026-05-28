@@ -307,7 +307,7 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                     elif child.get('add_to_dict'):
                         value = node.get(attribute, '{}').strip(' \n')
                         if not value.startswith('{') or not value.endswith('}'):
-                            raise ValueError(_(f'Cannot add to value which is not dictionary {value}'))
+                            raise ValueError(_('Cannot add to value which is not dictionary %s') % value)
                         value = value.strip(' {},\n')
                         value = '{%s%s}' % (value + ', ' if value else '', child.get('add_to_dict'))
                     else:

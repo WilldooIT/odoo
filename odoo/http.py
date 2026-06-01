@@ -406,7 +406,11 @@ def db_filter(dbs, host=None):
             host_m = host_m[4:]
         domain = host_m.partition('.')[0]
 
-        db_dict = json.loads(config["db_filter_multi"])
+        try:
+            db_dict = json.loads(config["db_filter_multi"])
+        except (json.JSONDecodeError, ValueError):
+            _logger.error("db_filter_multi config is not valid JSON, ignoring")
+            db_dict = {}
         if isinstance(db_dict, dict) and host_m in db_dict:
             ndbs = []
             for dbfilter in db_dict[host_m]:

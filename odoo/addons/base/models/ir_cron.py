@@ -16,6 +16,7 @@ import psycopg2.errors
 from dateutil.relativedelta import relativedelta
 
 import json
+import re
 from functools import lru_cache
 
 import odoo
@@ -57,6 +58,9 @@ def db_whitelisted(db_name):
         cron_whitelist = first_element
 
     if db_name not in cron_whitelist:
+        for pattern in cron_whitelist:
+            if re.match(pattern, db_name):
+                return True
         return False
     return True
 

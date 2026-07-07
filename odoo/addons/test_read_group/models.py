@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from odoo.tools import SQL
 
 
 class Test_Read_GroupOn_Date(models.Model):
@@ -68,6 +69,63 @@ class Test_Read_GroupAggregate(models.Model):
     numeric_value = fields.Float(digits=(4, 2))
     partner_id = fields.Many2one('res.partner')
     display_name = fields.Char(store=True)
+
+    # Non-stored fields with a compute_sql counterpart, so they can be used in
+    # read_group aggregates/groupby, search domains and ORDER BY.
+    value_doubled_sql = fields.Integer(
+        compute='_compute_value_doubled_sql',
+        compute_sql='_compute_sql_value_doubled_sql',
+        compute_sudo=False,
+        aggregator='sum',
+    )
+    value_x_partner_name_len_sql = fields.Integer(
+        compute='_compute_value_x_partner_name_len_sql',
+        compute_sql='_compute_sql_value_x_partner_name_len_sql',
+        compute_sudo=False,
+        aggregator='sum',
+    )
+
+    @api.depends('value')
+    def _compute_value_doubled_sql(self):
+        for agg in self:
+            agg.value_doubled_sql = agg.value * 2
+
+    @api.depends('value', 'partner_id', 'partner_id.name')
+    def _compute_value_x_partner_name_len_sql(self):
+        for agg in self:
+            agg.value_x_partner_name_len_sql = (
+                agg.value * len(agg.partner_id.name) if agg.partner_id else 0
+            )
+
+    def _compute_sql_value_doubled_sql(self, alias, query):
+        return SQL("(%s.value * 2)", SQL.identifier(alias))
+
+    def _compute_sql_value_x_partner_name_len_sql(self, alias, query):
+        partner_alias = query.make_alias(alias, 'partner_id')
+        query.add_join(
+            'LEFT JOIN',
+            partner_alias,
+            'res_partner',
+            SQL(
+                "%s.partner_id = %s.id",
+                SQL.identifier(alias),
+                SQL.identifier(partner_alias),
+            ),
+        )
+        return SQL(
+            "(%s.value * LENGTH(%s.name))",
+            SQL.identifier(alias),
+            SQL.identifier(partner_alias),
+        )
+
+
+class Test_Read_GroupAggregateOrdered(models.Model):
+    # Default sort order references a compute_sql field, exercising the
+    # _order path through to_sql.
+    _name = 'test_read_group.aggregate_ordered'
+    _inherit = 'test_read_group.aggregate'
+    _description = 'Aggregate ordered by a compute_sql field'
+    _order = 'value_doubled_sql asc, id'
 
 
 # we use a selection that is in reverse lexical order, in order to check the

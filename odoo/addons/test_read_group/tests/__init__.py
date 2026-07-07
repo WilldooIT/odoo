@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import test_compute_sql
 from . import test_formatted_read_group
 from . import test_private_read_group
 from . import test_read_grouping_sets

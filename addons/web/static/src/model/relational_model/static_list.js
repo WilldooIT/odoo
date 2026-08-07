@@ -818,20 +818,7 @@ export class StaticList extends DataPoint {
         const { CREATE, UPDATE, LINK } = x2ManyCommands;
         const commands = [];
         for (const command of this._commands) {
-            if (command[0] === UPDATE && command[1] in this._unknownRecordCommands) {
-                // the record has never been loaded, but we received update commands from the
-                // server for it, so we need to sanitize them (as they contained unity values)
-                const uCommands = this._unknownRecordCommands[command[1]];
-                for (const uCommand of uCommands) {
-                    const values = fromUnityToServerValues(
-                        uCommand[2],
-                        this.fields,
-                        this.activeFields,
-                        { withReadonly, context: this.context }
-                    );
-                    commands.push([uCommand[0], uCommand[1], values]);
-                }
-            } else if (command[0] === CREATE || command[0] === UPDATE) {
+            if (command[0] === CREATE || command[0] === UPDATE) {
                 const record = this._cache[command[1]];
                 if (command[0] === CREATE && record.resId) {
                     // we created a new record, but it has already been saved (e.g. because we clicked
@@ -839,7 +826,33 @@ export class StaticList extends DataPoint {
                     // LINK
                     commands.push([LINK, record.resId]);
                 } else {
-                    const values = record._getChanges(record._changes, { withReadonly });
+                    const values = {};
+                    const uCommands = this._unknownRecordCommands[command[1]];
+                    if (command[0] === UPDATE && uCommands) {
+                        // we received update commands from the server for that record, but they
+                        // haven't been applied on it, either because it has never been loaded, or
+                        // because they contain x2many fields this list can't display. They must
+                        // still be sent to the server, so we sanitize them (as they contain unity
+                        // values). They must however not shadow the changes made on the record
+                        // itself, so they're only used as a base for those.
+                        for (const uCommand of uCommands) {
+                            Object.assign(
+                                values,
+                                fromUnityToServerValues(
+                                    uCommand[2],
+                                    this.fields,
+                                    this.activeFields,
+                                    { withReadonly, context: this.context }
+                                )
+                            );
+                        }
+                    }
+                    if (record) {
+                        Object.assign(
+                            values,
+                            record._getChanges(record._changes, { withReadonly })
+                        );
+                    }
                     if (command[0] === CREATE || Object.keys(values).length) {
                         commands.push([command[0], command[1], values]);
                     }

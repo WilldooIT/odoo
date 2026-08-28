@@ -496,6 +496,12 @@ def load_modules(registry, force_demo=False, status=None, update_module=False):
                 if modules:
                     modules.button_upgrade()
 
+            # An auto-install module shipped after its triggers were installed
+            # is never reached by the cascade in button_install, which only
+            # fires while a trigger is 'to install'. Give it its chance here,
+            # on any run that is updating modules at all.
+            Module._install_ready_auto_install_modules()
+
             env.flush_all()
             cr.execute("update ir_module_module set state=%s where name=%s", ('installed', 'base'))
             Module.invalidate_model(['state'])

@@ -404,6 +404,41 @@ class IrModuleModule(models.Model):
                 self.check_external_dependencies(module.name, newstate)
                 module.write({'state': newstate})
 
+    def _install_ready_auto_install_modules(self):
+        """Install auto-install modules whose triggers are already satisfied.
+
+        button_install only cascades to an auto-install module while one of
+        its triggers is itself 'to install'. A module shipped after its
+        triggers were installed therefore never qualifies, however many times
+        the database is upgraded afterwards. Any update run is a chance to
+        notice that its dependencies are met by now.
+        """
+        if config.get('skip_auto_install'):
+            return self.browse()
+
+        install_states = frozenset(('installed', 'to install', 'to upgrade'))
+        company_countries = self.env['res.company'].search([]).country_id
+        ready = self.browse()
+        for module in self.search([('state', '=', 'uninstalled'), ('auto_install', '=', True)]):
+            triggers = module.dependencies_id.filtered('auto_install_required')
+            if not triggers:
+                # auto_install with nothing to trigger on - not ours to guess at
+                continue
+            if any(trigger.state not in install_states for trigger in triggers):
+                continue
+            if module.country_ids and not (module.country_ids & company_countries):
+                continue
+            ready |= module
+
+        if ready:
+            _logger.info(
+                'auto-installing modules whose dependencies are now met: %s',
+                ', '.join(sorted(ready.mapped('name'))),
+            )
+            # button_install cascades from here, so chained auto-installs follow
+            ready.button_install()
+        return ready
+
     @assert_log_admin_access
     def button_install(self):
         company_countries = self.env['res.company'].search([]).country_id

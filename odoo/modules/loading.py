@@ -420,6 +420,12 @@ def load_modules(
             reinit_modules = modules.downstream_dependencies(exclude_states=('uninstalled', 'uninstallable', 'to remove', 'to install')) + modules
             registry._reinit_modules.update(m for m in reinit_modules.mapped('name') if m not in graph._imported_modules)
 
+        # An auto-install module shipped after its triggers were installed
+        # is never reached by the cascade in button_install, which only
+        # fires while a trigger is 'to install'. Give it its chance here,
+        # on any run that is updating modules at all.
+        Module._install_ready_auto_install_modules()
+
         env.flush_all()
         cr.execute("update ir_module_module set state=%s where name=%s", ('installed', 'base'))
         Module.invalidate_model(['state'])

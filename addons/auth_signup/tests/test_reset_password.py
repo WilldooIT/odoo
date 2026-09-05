@@ -1,10 +1,23 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from unittest.mock import patch
+
+from odoo import http
+from odoo.addons.mail.models.mail_mail import MailDeliveryException
 from odoo.tests.common import HttpCase
 from werkzeug.urls import url_parse
 
 
 class TestResetPassword(HttpCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.test_user = cls.env['res.users'].create({
+            'login': 'test',
+            'name': 'The King',
+            'email': 'noop@example.com',
+        })
 
     def test_reset_password(self):
         """
@@ -12,16 +25,94 @@ class TestResetPassword(HttpCase):
             on first signup if a password is already set user is redirected to login page when accessing that link again
             'signup_email' is used in the web controller (web_auth_reset_password) to detect this behaviour
         """
-        test_user = self.env['res.users'].create({
-            'login': 'test',
-            'name': 'The King',
-            'email': 'noop@example.com',
-        })
 
-        self.assertEqual(test_user.email, url_parse(test_user.with_context(create_user=True).signup_url).decode_query()["signup_email"], "query must contain 'signup_email'")
+        self.assertEqual(self.test_user.email, url_parse(self.test_user.with_context(create_user=True).signup_url).decode_query()["signup_email"], "query must contain 'signup_email'")
 
         # Invalidate signup_url to skip signup process
         self.env.invalidate_all()
-        test_user.action_reset_password()
+        self.test_user.action_reset_password()
 
-        self.assertNotIn("signup_email", url_parse(test_user.signup_url).decode_query(), "query should not contain 'signup_email'")
+        self.assertNotIn("signup_email", url_parse(self.test_user.signup_url).decode_query(), "query should not contain 'signup_email'")
+
+    def _post_reset_password(self, login):
+        self.authenticate(None, None)
+        return self.url_open('/web/reset_password', data={
+            'login': login,
+            'csrf_token': http.Request.csrf_token(self),
+        })
+
+    def test_reset_password_generic_response(self):
+        """ By default, the public reset password page must not reveal whether
+            an account exists for the submitted login: the response is the
+            same for a known and an unknown login, and no error is shown.
+        """
+        self.env['ir.config_parameter'].sudo().set_param('auth_signup.default_reset_password_response', False)
+        generic_message = "If there is an account associated with this login, you will receive a password reset link by email."
+
+        with patch('odoo.addons.mail.models.mail_mail.MailMail.send') as mock_send:
+            response_known = self._post_reset_password(self.test_user.login)
+            self.assertTrue(mock_send.called, "The existing user must receive their password reset link")
+            mock_send.reset_mock()
+            response_unknown = self._post_reset_password('nobody@example.com')
+            self.assertFalse(mock_send.called, "No mail must be sent for an unknown login")
+
+        for response in (response_known, response_unknown):
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(generic_message, response.text)
+            self.assertNotIn('alert-danger', response.text)
+            self.assertNotIn('No account found for this login', response.text)
+            self.assertNotIn('Password reset instructions sent to your email', response.text)
+
+        # the known user did get a reset token
+        self.assertEqual(self.test_user.partner_id.signup_type, 'reset')
+
+    def test_reset_password_generic_response_hides_delivery_errors(self):
+        """ Mail delivery errors only happen for existing accounts, so they must
+            not be surfaced either when the generic response is enabled.
+        """
+        self.env['ir.config_parameter'].sudo().set_param('auth_signup.default_reset_password_response', False)
+
+        with patch('odoo.addons.mail.models.mail_mail.MailMail.send') as mock_send:
+            mock_send.side_effect = MailDeliveryException(
+                "Unable to connect to SMTP Server",
+                ConnectionRefusedError("111, 'Connection refused'"),
+            )
+            response = self._post_reset_password(self.test_user.login)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("If there is an account associated with this login", response.text)
+        self.assertNotIn('alert-danger', response.text)
+        self.assertNotIn('Could not contact the mail server', response.text)
+
+    def test_reset_password_default_odoo_response(self):
+        """ With auth_signup.default_reset_password_response enabled, Odoo's
+            default behaviour is kept: unknown logins get an explicit error.
+        """
+        self.env['ir.config_parameter'].sudo().set_param('auth_signup.default_reset_password_response', '1')
+
+        with patch('odoo.addons.mail.models.mail_mail.MailMail.send'):
+            response_known = self._post_reset_password(self.test_user.login)
+            response_unknown = self._post_reset_password('nobody@example.com')
+
+        self.assertEqual(response_known.status_code, 200)
+        self.assertIn('Password reset instructions sent to your email', response_known.text)
+        self.assertNotIn('alert-danger', response_known.text)
+
+        self.assertEqual(response_unknown.status_code, 200)
+        self.assertIn('No account found for this login', response_unknown.text)
+        self.assertNotIn('If there is an account associated with this login', response_unknown.text)
+
+    def test_use_default_reset_password_response_param(self):
+        """ The config parameter accepts the usual truthy/falsy spellings and
+            defaults to the generic (non-revealing) behaviour.
+        """
+        Users = self.env['res.users']
+        set_param = self.env['ir.config_parameter'].sudo().set_param
+        set_param('auth_signup.default_reset_password_response', False)
+        self.assertFalse(Users._use_default_reset_password_response())
+        for value in ('1', 'True', 'true'):
+            set_param('auth_signup.default_reset_password_response', value)
+            self.assertTrue(Users._use_default_reset_password_response(), value)
+        for value in ('0', 'False', 'false', 'garbage'):
+            set_param('auth_signup.default_reset_password_response', value)
+            self.assertFalse(Users._use_default_reset_password_response(), value)

@@ -92,8 +92,15 @@ class AuthSignupHome(Home):
                     _logger.info(
                         "Password reset attempt for <%s> by user <%s> from %s",
                         login, request.env.user.login, request.httprequest.remote_addr)
-                    request.env['res.users'].sudo().reset_password(login)
-                    qcontext['message'] = _("Password reset instructions sent to your email")
+                    Users = request.env['res.users'].sudo()
+                    if Users._use_default_reset_password_response():
+                        Users.reset_password(login)
+                        qcontext['message'] = _("Password reset instructions sent to your email")
+                    else:
+                        self._reset_password_generic_response(login)
+                        qcontext['message'] = _(
+                            "If there is an account associated with this login, "
+                            "you will receive a password reset link by email.")
             except UserError as e:
                 qcontext['error'] = e.args[0]
             except SignupError:
@@ -111,6 +118,23 @@ class AuthSignupHome(Home):
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
         return response
+
+    def _reset_password_generic_response(self, login):
+        """ Reset the password of the user matching ``login`` without leaking
+            whether such an account exists.
+
+            Any failure (unknown login, multiple matches, archived user, mail
+            delivery error, ...) is logged server side and rolled back, but
+            never surfaced to the requester: the caller always renders the
+            same generic message.
+        """
+        try:
+            with request.env.cr.savepoint():
+                request.env['res.users'].sudo().reset_password(login)
+        except Exception as e:  # noqa: BLE001
+            _logger.warning(
+                "Password reset for <%s> from %s failed: %s",
+                login, request.httprequest.remote_addr, e)
 
     def get_auth_signup_config(self):
         """retrieve the module config (which features are enabled) for the login page"""

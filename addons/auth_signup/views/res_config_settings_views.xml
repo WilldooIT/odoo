@@ -18,9 +18,9 @@
                     <setting string="Password Reset" help="Enable password reset from Login page" id="enable_password_reset">
                         <field name="auth_signup_reset_password"/>
                         <div class="content-group" invisible="not auth_signup_reset_password">
-                            <div class="row mt16">
-                                <label for="auth_signup_default_reset_password_response" class="col-lg-6 o_light_label"/>
-                                <field name="auth_signup_default_reset_password_response"/>
+                            <div class="mt16">
+                                <field name="auth_signup_default_reset_password_response" class="w-auto"/>
+                                <label for="auth_signup_default_reset_password_response" class="o_light_label"/>
                             </div>
                             <div class="text-muted">
                                 Tell the requester whether an account exists for the submitted login.

@@ -10,6 +10,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.http import request
+from odoo.tools import str2bool
 
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 from odoo.addons.auth_signup.models.res_partner import SignupError
@@ -153,6 +154,21 @@ class ResUsers(models.Model):
         except Exception as e:
             # copy may failed if asked login is not available.
             raise SignupError(str(e))
+
+    @api.model
+    def _use_default_reset_password_response(self):
+        """ Whether the public password reset page should use Odoo's default
+            behaviour, i.e. tell the requester whether an account exists for
+            the submitted login.
+
+            Controlled by the ``auth_signup.default_reset_password_response``
+            config parameter. It is off by default: the page then returns the
+            same, generic response whether or not an account matches the
+            login, so the reset form cannot be used to enumerate accounts.
+        """
+        value = self.env['ir.config_parameter'].sudo().get_param(
+            'auth_signup.default_reset_password_response', default='False')
+        return str2bool(value, default=False)
 
     def reset_password(self, login):
         """ retrieve the user corresponding to login (login or email),

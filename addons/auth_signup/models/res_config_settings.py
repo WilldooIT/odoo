@@ -10,6 +10,14 @@ class ResConfigSettings(models.TransientModel):
     auth_signup_reset_password = fields.Boolean(
         string='Enable password reset from Login page',
         config_parameter='auth_signup.reset_password')
+    auth_signup_default_reset_password_response = fields.Boolean(
+        string='Default Odoo password reset response',
+        help="When enabled, the password reset page uses Odoo's default "
+             "behaviour and tells the requester whether an account exists "
+             "for the submitted login. When disabled (default), the page "
+             "returns the same generic message whether or not an account "
+             "matches the login, so it cannot be used to enumerate accounts.",
+        config_parameter='auth_signup.default_reset_password_response')
     auth_signup_uninvited = fields.Selection(
         selection=[
             ('b2b', 'On invitation'),

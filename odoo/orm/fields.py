@@ -924,10 +924,10 @@ class Field(typing.Generic[T]):
 
     @property
     def _description_searchable(self) -> bool:
-        return bool(self.store or self.search)
+        return bool(self.store or self.search or self.compute_sql)
 
     def _description_sortable(self, env: Environment):
-        if self.column_type and self.store:  # shortcut
+        if self.column_type and (self.store or self.compute_sql):  # shortcut
             return True
         if self.inherited_field and self.inherited_field._description_sortable(env):
             # avoid compuation for inherited field
